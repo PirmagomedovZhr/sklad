@@ -1,0 +1,13 @@
+{% extends 'cmsplugin_news/news_base.html' %}
+{% block page-title %}Новости за {{ year }} год{% endblock %}
+{% block content %}
+<div class="news">
+<ul>
+    {% for date in date_list %}
+        <li><a href="{% url news_archive_month year=year month=date|date:'m'  %}">{{ date|date:"F" }}</a></li>
+    {% empty %}
+        <li>Нет новостей за этот год</li>
+    {% endfor %}
+</ul>
+</div>
+{% endblock %}

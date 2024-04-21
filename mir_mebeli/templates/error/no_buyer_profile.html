@@ -1,0 +1,17 @@
+{% if request.user.buyer %}
+    eh?
+{% else %}
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset='utf-8'>
+        <title>Ошибка - Нет профиля покупателя</title>
+    </head>
+    <body>
+        <h1>Ошибка. У вашего пользователя нет профиля покупателя.</h1>
+        <p>E-mail: {{ request.user.email }}</p>
+        <p>Username: {{ request.user.username }}</p>
+        <p>Вернуться на <a href="/">главную страницу</a>.</p>
+    </body>
+    </html>
+{% endif %}

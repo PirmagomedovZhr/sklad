@@ -1,0 +1,74 @@
+{% extends 'cms/base.html' %}
+
+{% load shop pytils_numeral thumbnail %}
+
+{% block title %}Информация о заказе № {{ order.pk }}{% endblock %}
+
+{# информация о заказе #}
+
+{% block content %}
+
+<div><a href="{% url cart %}#orders">Вернуться в корзину</a></div>
+
+<div id="order_{{ order.pk }}" class="cart-order">
+    {% if message %}
+    <h2>
+        {{ message }}
+    </h2>
+    {% endif %}
+    <div class="order-title">
+        Заказ №{{ order.pk }} от {{ order.create_date|date:"d.m.Y" }}
+    </div>
+
+    <div class="tbl-header">
+        <div class="l w540">Состав заказа</div>
+        <div class="l w110">Количество</div>
+        <div class="l w85">Цена</div>
+        <div class="r w400">Параметры заказа</div>
+    </div>
+
+    <div class="l w750">
+        {% for item in order.items.all %}
+            {% with item.good as good %}
+                <div class="clear order-good no-borders{% cycle ' odd' ' even' %}">
+                    <div class="image l">
+                        {% thumbnail good.image "100x70" padding=True as img %}
+                            <img src="{{ img.url }}" width="100" height="70" title="{{ good.get_name }}" />
+                        {% empty %}
+                            <img src="{{ MEDIA_URL }}images/noimage.jpg" width="100" height="70" title="{{ good.get_name }}" />
+                        {% endthumbnail %}
+                    </div>
+                    <div class="l w400 mr20">
+                        <div class="title"><a href="{{ good.get_absolute_url }}">{{ good.get_name }}</a></div>
+                        <div class="desc">
+                            {% if good.dims %}<p title="Длина / Высота / Ширина (мм)">{{ good.dims }}</p>{% else %}<p>нет размеров</p>{% endif %}
+                        </div>
+                    </div>
+                    <div class="l w110 price"><span class="pprice2">{{ item.count }}</span></div>
+                    <div class="l w85 price"><span class="pprice2">{{ item.price|price }} р.</span></div>
+                </div>
+            {% endwith %}
+        {% endfor %}
+    </div>
+
+    <div class="order-param">
+        <div>Продавец: ООО "Торговый дом, 183031, Мурманск, Свердлова 29/2</div>
+
+        <div style="margin-top: 10px;">Покупатель: {{ order.get_full_fio|default:"нет данных" }}</div>
+        <div>Адрес для доставки: {{ order.city }}, {{ order.address }}</div>
+        <div>Телефон покупателя: {{ order.phone }}</div>
+
+        <div style="margin-top: 10px;">
+            Оплата товаров:<br />
+            {{ order.get_payment_method }} &ndash;
+            <span class="pprice2">{{ order.sum|price }} р.</span>
+        </div>
+
+        <div style="margin-top: 10px;">
+            Статус заказа:<br />
+            {{ order.get_status_display|capfirst }} {% if order.is_done %}{{ order.done_date|date:"d.m.Y" }}{% else %}{% if order.is_canceled %}{{ order.cancel_date|date:"d.m.Y" }}{% endif %}{% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

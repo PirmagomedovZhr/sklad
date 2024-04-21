@@ -1,0 +1,33 @@
+<form id="reset_form" class="form2 ajax-form active_form" action="{% url register-and-login %}" method="post">
+    {% csrf_token %}
+
+    <a id="show_login_form" href="#">Вход в магазин</a>
+    <h3>&nbsp;/ Напомнить пароль</h3>
+
+    <div class="form-errors">{{ form.non_field_errors }}</div>
+
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+
+    {% with form.email as field %}
+        <div id="{{ field.name }}" class="field clear">
+            <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+            {{ field }}
+            {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
+            <div class="errors">{{ field.errors }}</div>
+        </div>
+    {% endwith %}
+
+    {% with form.captcha as field %}
+        <div id="{{ field.name }}" class="field clear">
+            <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+            {{ field }}
+            <div class="errors">{{ field.errors }}</div>
+        </div>
+    {% endwith %}
+
+    <div class="button"><input type="submit" name="reset" value="Выслать пароль" /></div>
+
+    <div class="message"></div>
+</form>

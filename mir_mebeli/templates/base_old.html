@@ -1,0 +1,476 @@
+{% load cache cms_tags menu_tags shop teasers_tags pytils_numeral %}<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>{% block title %}{% page_attribute "page_title" %}{% endblock %}</title>
+    {% block meta %}
+        <meta name="keywords" lang="ru" content="{% filter force_escape %}{% page_attribute meta_keywords %}{% endfilter %}" />
+        <meta name="description" content="{% filter force_escape %}{% page_attribute meta_description %}{% endfilter %}" />
+        <meta name="viewport" content="{width=device-width, initial-scale=1}">
+		<meta name="verify-admitad" content="d51850f8fa" />
+    {% endblock %}
+
+    {% block styles %}
+        <!--[if lte IE 6]>
+            <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie6.css" media="all" />
+        <![endif]-->
+        <!--[if lte IE 7]>
+            <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie67.css" media="all" />
+        <![endif]-->
+        <!--[if IE]>
+            <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" media="all" />
+        <![endif]-->
+        <link rel="shortcut icon" href="{{ MEDIA_URL }}favicon.ico" />
+        <link rel="stylesheet" href="{{ MEDIA_URL }}css/all.css?t=1449836872" media="all" />
+        <link rel="stylesheet" href="{{ MEDIA_URL }}css/custom-theme/jquery-ui-1.8.1.custom.css" media="all" />
+        <link rel="stylesheet" href="{{ MEDIA_URL }}shadowbox-3.0.3/shadowbox.css" />
+        <link rel="stylesheet" href="{{ MEDIA_URL }}fancybox2/jquery.fancybox.css" media="screen" />
+        <link rel="stylesheet" href="{{ MEDIA_URL }}omniwindow/jquery.omniwindow.css" />
+    {% endblock %}
+
+    {% block scripts %}
+        <!--[if lte IE 6]>
+            <script src="{{ MEDIA_URL }}js/ie-png.js"></script>
+        <![endif]-->
+        <script src="{{ MEDIA_URL }}js/jquery-1.7.2.min.js"></script>
+        <script src="{{ MEDIA_URL }}shadowbox-3.0.3/shadowbox.js"></script>
+        <script src="{{ MEDIA_URL }}fancybox2/jquery.fancybox.pack.js"></script>
+        <script src="{{ MEDIA_URL }}js/jquery-ui-1.8.custom.min.js"></script>
+        <script src="{{ MEDIA_URL }}js/jquery.form.js"></script>
+        <script src="{{ MEDIA_URL }}js/jquery.blockUI.js"></script>
+        <script src="{{ MEDIA_URL }}js/jquery.dropshadow.js"></script>
+        <script src="{{ MEDIA_URL }}js/jquery.balloon.min.js"></script>
+        <script src="{{ MEDIA_URL }}js/jquery.slides.min.js"></script>
+        <script src="{{ MEDIA_URL }}omniwindow/jquery.omniwindow.js"></script>
+        <script src="{{ MEDIA_URL }}js/endless-pagination.js"></script>
+
+        <script type="text/javascript">
+            CONFIG = {
+                // user
+                user_logged: {{ request.user.is_authenticated|lower }},
+
+                // cart
+                cart_url: "{% url cart %}",
+                cart_orders_url: "{% url cart %}#orders",
+                cart_qty_set_url: "{% url cart-qty-set-blank %}",
+
+                // other
+                good_in_cart_html: '<span class="in_cart"><a href="{% url cart %}" class="in_cart"></a></span>',
+                good_popup_in_cart_html: '<span class="in_cart"><a href="{% url cart %}" class="in_cart">В корзине</a></span>',
+            };
+        </script>
+
+        <script src="{{ MEDIA_URL }}js/utils.js?t=1442943107"></script>
+        <script src="{{ MEDIA_URL }}js/ajax-form.js"></script>
+        <script src="{{ MEDIA_URL }}js/callback-form.js"></script>
+        <script src="{{ MEDIA_URL }}js/common.js?t=1442943107"></script>
+
+        <script type="text/javascript">
+            Shadowbox.init({
+                overlayOpacity: 0.7
+            });
+        </script>
+
+        <script>
+            function collapsElement(id) {
+                if ( document.getElementById(id).style.display != "none" ) {
+                    document.getElementById(id).style.display = 'none';
+                }
+                else {
+                    document.getElementById(id).style.display = '';
+                }
+            }
+        </script>
+        <script type="text/javascript">
+            $(function() {
+                $("form", "#dialogs").each(function(i, el) {
+                    var form = $(el);
+                    $('.errors-layout', form).html('').hide();
+                    form.ajaxForm({
+                        beforeSend: function() {
+                            $('.errors-layout', form).html('').hide();
+                        },
+                        success: function(data) {
+                            if (data.form.success) {
+                                   form.dialog('close');
+                                if (data.message) {
+                                    $("#dialog-message").dialog({title: data.title});
+                                    $("#dialog-message").html(data.message).dialog("open");
+                                    $("#dialog-message").dialog({
+                                        close: function() { window.location.reload(); }
+                                    });
+                                }
+                                else {
+                                    window.location.reload();
+                                }
+                            } else {
+                                for (field_name in data.form.fields) {
+                                    $("[name^="+field_name+"]", form).toggleClass("ui-state-error", !data.form.fields[field_name]);
+                                }
+                                $('.errors-layout', form).html(data.form.errors).show();
+                                var img = $("img[src!=/captcha/]", form)[0];
+                                if (img) {
+                                    img.src = img.src + '#'
+                                }
+                            }
+                        }
+                    });
+                });
+
+                {% comment %}
+                $('#req-price-submit').button();
+
+                //
+                $("#req-price-form").dialog({resizable:false,modal:true,width:410,autoOpen:false});
+                $("#req-price-form")
+                    .ajaxStart(function(){
+                        $("#req-price-form #req-price-submit").attr("disabled", true);
+                        $(this).block({
+                            message: '<h1>Пожалуйста, подождите...</h1>',
+                            css: {
+                                width: '100%',
+                                height: '100%',
+                                top: 0,
+                                left: 0,
+                                opacity: .6,
+                                background: 'url({{ MEDIA_URL }}images/loading2.gif) no-repeat center center'
+                            }
+                        });
+                    })
+                    .ajaxStop(function(){
+                        $("#req-price-form #req-price-submit").removeAttr("disabled");
+                        $(this).unblock();
+                    });
+                {% endcomment %}
+
+                //
+                $("#dialog-message").dialog({
+                    modal: true,
+                    autoOpen:false,
+                    resizable:false,
+                    width:310,
+                    buttons: {
+                        Ok: function() {
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+            });
+
+        $(document).ready(function() {
+
+        $(".good .image img").hover(function() {
+            // hover in
+
+            $(this).parent().parent().children(".price").css("display","none");
+            $(this).parent().parent().children(".new").css("display","none");
+            $(this).animate({
+               height: "200",
+               width: "260",
+               top: "-=15",
+               left: "-=15"
+            }, "fast");
+            $(this).removeShadow();
+            $(this).dropShadow({left:0,top:0,blur:0,color:'black'});
+        }, function() {
+            // hover out
+
+            $(this).animate({
+                height: "170",
+                width: "230",
+                top: "+=15",
+                left: "+=15"
+            }, "fast");
+            $(this).css('z-index', '0');
+            $(this).parent().parent().children(".price").css("display","block");
+            $(this).parent().parent().children(".new").css("display","block");
+            $(this).removeShadow();
+        });
+
+        $(".navigation td").hover(function(){
+            if (472 > (1200- $(this).offset().left)){
+                $(this).children(".sub_menu_block").css({'display':'block','margin-left':-(509-$(this).width()),'z-index':100});
+                $(this).children(".sub_menu_block").children(".clear-border").css({'float':'right','margin-right':'-20px','z-index':101})
+                $(this).children('a').css({'z-index':9900})
+            }else{
+                $(this).children(".sub_menu_block").css({'display':'block'});
+            };
+            $(this).children(".sub_menu_block").children(".clear-border").css('width',$(this).width()+2);
+
+        },
+        function(){
+            $(this).children(".sub_menu_block").css('display','none');
+        });
+    });
+
+            // search form
+            $(function() {
+                var search_link = $('.search_popup');
+                var search_block = $('.search_popup_block');
+
+                search_link.click(function() {
+                    search_block.show();
+                });
+
+                $('.close_btn', search_block).click(function() {
+                    search_block.hide();
+                });
+
+                var form = $('#search_form');
+                var cat = $('input[name=cat]', form);
+                cat.click(function() {
+                    var cat_name = $.trim($(this).parent().text());
+                    search_link.text(cat_name);
+                    search_block.hide();
+                });
+            });
+        </script>
+		<script src="//code-ya.jivosite.com/widget/r7FQxRThOT" async></script>
+
+    {% endblock %}
+
+    {% block extrahead %}{% endblock %}
+
+
+</head>
+
+<body >
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function (d, w, c) {
+        (w[c] = w[c] || []).push(function() {
+            try {
+                w.yaCounter15069028 = new Ya.Metrika({
+                    id:15069028,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true
+                });
+            } catch(e) { }
+        });
+
+        var n = d.getElementsByTagName("script")[0],
+            s = d.createElement("script"),
+            f = function () { n.parentNode.insertBefore(s, n); };
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+        if (w.opera == "[object Opera]") {
+            d.addEventListener("DOMContentLoaded", f, false);
+        } else { f(); }
+    })(document, window, "yandex_metrika_callbacks");
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/15069028" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-32503839-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<div class="wrapper">
+
+    <div id="dialogs">
+        {% block dialogs %}{% endblock %}
+    </div>
+
+    <div id="header">
+        <div class="logo" style="display:none;"><a href="/">Строительные материалы в Мурманске</a></div>
+        {% block header %}
+
+        <div class="header-menu">
+            <div class="block-contact">
+                    <p>183034, Мурманск, Домостроительная, д.16</p>
+                    <p><a href="tel:+78152601101" style="text-decoration:none;">(8152) <span class="number">601-101</span></a></p>
+                    {% include "yandexmap_popup.html" %}
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+    </div>
+
+    <div class="menu">
+        {% block top-menu %}
+            <div class="top-menu clear">
+                {% show_menu 1 1 0 1 "cms/menu/top.html" %}
+                <div class="header-search">
+                    {% render_search_form request %}
+                </div>
+            </div>
+        {% endblock %}
+        <div class="category-popup">
+            {% render_category_popup %}
+        </div>
+    </div>
+
+    {% block blockinfo %}{% endblock %}
+
+    <div id="main">
+        {% block content_wide %}{% endblock %}
+
+        {% block content_all %}
+		<div style="margin-top:10px;"><a href="https://sklad51.ru/drevesnoplitnyie-materialyi/plityi-osp/"><img src="{{MEDIA_URL}}images/banner-osp.png" width="1200" height="90" border="0" alt="Плита ОСП всего за 1050 рублей/лист"></a></div>
+        <div id="content" {% block content_class %}{% endblock %}>
+            <div class="clear">
+                {% show_breadcrumb 0 "cms/menu/breadcrumb.html" %}
+            </div>
+
+            <div class="content clear">
+                {% block search-form %}{% endblock %}
+
+                {% block content %}
+                    {% block filter %}{% endblock %}
+                {% endblock %}
+            </div>
+
+
+        </div>
+        {% endblock %}
+
+        {% block sidebar %}{% endblock %}
+    </div>
+
+    <div id="block-callback">
+        {% with req_phone_call_form as form %}
+            <form id="callback_form"  class="ajax-form" action="{% url req-phone-call %}" method="post">
+                <h2>Заказ обратного звонка</h2>
+
+                <a href="#" class="close_callback"></a>
+
+                <p>Есть разговор с менед- жером по продажам?
+                    Оставьте свой номер телефона и Вам пере- звонят специалисты нашей компании</p>
+
+                {% csrf_token %}
+
+{#                <div class="form-errors">{{ form.non_field_errors }}</div>#}
+                <p class="message"></p>
+
+                {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+
+                {% with form.phone as field %}
+                    <div id="{{ field.name }}" class="field clear">
+                        {{ field }}
+{#                        <div class="errors">{{ field.errors }}</div>#}
+                    </div>
+                {% endwith %}
+
+                <input type="submit" value="Позвоните мне!">
+            </form>
+        {% endwith %}
+    </div>
+  </div>
+
+</div>
+    <div id="footer">
+    <div class="footer-content">
+        <div class="footer-left">
+        <p>ООО «Склад51» 2021 | Строительные материалы в Мурманске</p>
+		<p><a href="{{ MEDIA_URL }}privacy_policy.pdf">Политика в отношении обработки персональных данных</a></p>
+<img src="{{ MEDIA_URL }}/images/footer-logo.png" width="259" height="48" border="0" alt="" style="display:none;">
+        </div>
+        <div class="footer-right">
+        <p>183034, Мурманск, Домостроительная, д.16 (квартал "Северная промзона")</p>
+<p>(8152) <span class="numb_footer">601-101</span></p>
+<p><a href="/kontakty/">Схема проезда и режим работы</a></p>
+        </div>
+         </div>
+    </div>
+
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' <http://google-analytics.com/ga.js'> type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try {
+            var pageTracker = _gat._getTracker("UA-6756266-1");
+            pageTracker._trackPageview();
+        } catch(err) {}
+    </script>
+
+    {% block register_and_login_dialog %}{% endblock %}
+
+{% if MAIN_POPUP.ENABLED and not MAIN_POPUP.EXPIRED and MAIN_POPUP.SHOW_TODAY %}
+    <div id="main_popup" class="ow-modal ow-closed">
+        <a class="close-btn" href="#"></a>
+        <a class="buy-btn" href="/pokupatelyam/skidki-i-akcii/">
+    </div>
+
+    <script type="text/javascript">
+        $(function() {
+            var $modal = $('div#main_popup').omniWindow();
+
+            $modal.trigger('show');
+
+            $('.close-btn', $modal).click(function(e) {
+                e.preventDefault();
+                $modal.trigger('hide');
+            });
+        });
+    </script>
+{% endif %}
+
+<div class="ow-overlay ow-closed"></div>
+
+<script>
+    $(document).ready(function() {
+        var slides_timer;
+        var $slides = $('#slides');
+        if ($slides.children('div.slide').length > 1) {
+            $slides.slidesjs({
+                width: 1200,
+                height: 90,
+                navigation: { active: false },
+                pagination: {
+                    active: true,
+                    effect: 'fade'
+                },
+                play: {
+                    active: false,
+                    effect: 'fade',
+                    auto: true,
+                    interval: 10000,
+                    swap: false,
+                    pauseOnHover: true,
+                    restartDelay: 10000
+                },
+                effect: {
+                    fade: {
+                        speed: 800
+                    }
+                },
+                callback: {
+                    complete: function(number) {
+                        var pluginInstance = $slides.data('plugin_slidesjs');
+
+                        clearTimeout(slides_timer);
+                        slides_timer = setTimeout(function() {
+                            pluginInstance.play(true);
+                        }, pluginInstance.options.play.interval);
+                    }
+                }
+            });
+        }
+    });
+
+    $(document).ready(function() {
+        $('.fancybox').fancybox();
+    });
+</script>
+
+<script src="{{ MEDIA_URL }}js/button.js?t=1442965232"></script>
+<div id="top-link">
+    <a href="#top"></a>
+</div>
+
+</body>
+</html>

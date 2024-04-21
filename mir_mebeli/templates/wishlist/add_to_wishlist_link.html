@@ -1,0 +1,9 @@
+{% if already_in_wishlist %}
+    <span class="in_wishlist">
+        Добавлено в список покупок
+    </span>
+{% else %}
+    <span class="add_wishlist">
+        <a class="add_wishlist" href="{% url add_to_wishlist good_id %}">Добавить в список покупок</a>
+    </span>
+{% endif %}

@@ -1,0 +1,14 @@
+{% extends 'cmsplugin_news/news_base.html' %}
+{% load pagination_tags %}
+{% block page-title %}Новости за {{ day}}{% endblock %}
+{% block content %}
+    <div class="news">
+        {% autopaginate object_list 25 %}
+        {% for object in object_list %}
+            {% include 'cmsplugin_news/news_detail_embedded.html' %}
+        {% empty %}
+            <h2 class="align-center">Нет новостей за этот день</h2>
+        {% endfor %}
+        <div class="paginator_news">{% paginate %}</div>
+    </div>
+{% endblock %}

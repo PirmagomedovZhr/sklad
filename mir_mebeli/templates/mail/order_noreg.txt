@@ -1,0 +1,9 @@
+Заказ без регистрации с сайта sklad51.ru
+
+Телефон: {{ order.phone }}
+Контактное лицо: {{ order.name }}
+
+Заказанные позиции:
+{% for item in order.items.all %}{{ item.good.get_name|safe }}. Кол–во: {{ item.count }}. Цена: {{ item.price }} руб.
+{% endfor %}
+Итого: {{ order.sum }} руб.

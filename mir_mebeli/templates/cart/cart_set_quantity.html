@@ -1,0 +1,5 @@
+<input id="item_qty_{% if cart_popup %}popup_{% endif %}{{ good.pk }}" type="text" value="{{ cart_item.quantity|default:0 }}" autocomplete="off" />
+<div class="arrows">
+    <a id="item_qty_{% if cart_popup %}popup_inc_{{ good.pk }}{% endif %}" href="{% url cart-qty-inc good.pk %}" class="item-qty-inc" title="Больше">&#x25B2;</a>
+    <a id="item_qty_{% if cart_popup %}popup_dec_{{ good.pk }}{% endif %}" href="{% url cart-qty-dec good.pk %}" class="item-qty-dec" title="Меньше">&#x25BC;</a>
+</div>

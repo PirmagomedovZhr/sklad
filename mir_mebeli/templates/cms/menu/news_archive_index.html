@@ -1,0 +1,22 @@
+{% load cms_tags cache %}
+<ul class="left-menu news-index">
+{% for year in children %}
+{% if year.ancestor or year.sibling or year.descendant or year.selected %}<li class="{% if forloop.last %}no-line {% endif %}{% if year.selected %}selected{% endif %}{% if year.ancestor %}ancestor{% endif %}{% if year.sibling %}sibling{% endif %}{% if year.descendant %} descendant{% endif %}">
+	<a href="{{ year.get_absolute_url }}" class="year">{{ year.get_menu_title }}</a>
+	<ul class="month">
+		{% for month in year.children %}
+		<li class="{% if forloop.last %}no-line {% endif %}{% if month.selected %}selected{% endif %}{% if month.ancestor %}ancestor{% endif %}{% if month.sibling %}sibling{% endif %}{% if month.descendant %} descendant{% endif %}">
+			<a href="{{ month.get_absolute_url }}">{{ month.get_menu_title }}</a>
+			<ul class="days">
+				{% for day in month.children %}
+				<li class="{% if forloop.last %}no-line {% endif %}{% if day.selected %}selected{% endif %}{% if day.ancestor %}ancestor{% endif %}{% if day.sibling %}sibling{% endif %}{% if day.descendant %} descendant{% endif %}">
+					<a href="{{ day.get_absolute_url }}">{{ day.get_menu_title }}</a>{% if not forloop.last %},{% endif %}
+				</li>
+				{% endfor %}
+			</ul>
+		</li>
+		{% endfor %}
+	</ul>
+</li>{% endif %}
+{% endfor %}
+</ul>

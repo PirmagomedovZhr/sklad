@@ -1,0 +1,35 @@
+{% load shop pytils_numeral %}
+
+<div class="block-cart">
+    <div>
+        <img src="{{ MEDIA_URL }}/images/cart-icon.png" style="float:left;margin: 20px 10px 0 10px;">
+<div class="user_block">
+        {% if not request.user.is_authenticated %}
+            <a id="login_link" href="{% url register-and-login %}?next={% firstof request.path '/' %}">Вход</a> / <a id="register_link" href="{% url register-and-login %}?next={% firstof request.path '/' %}">Регистрация</a>
+        {% else %}
+            <a href="{% url logout_buyer %}?next={% firstof request.path '/' %}">Выход</a>
+        {% endif %}
+</div>
+        <p class='big_caption'>
+            {% if request.user.is_authenticated or cart.cached_items_count %}
+                <a id="my_cart_link" href="{% url cart %}">Моя корзина</a>
+            {% else %}
+                <span id="my_cart_link">Моя корзина</span>
+            {% endif %}
+        </p>
+
+        {% if cart.cached_items_count %}
+            <p id="block_cart_goods"><a href="{% url cart %}">{{ cart.cached_items_count }} {{ cart.cached_items_count|choose_plural:"товар, товара, товаров" }}</a> на {{ cart.cached_cost|price }} руб.</p>
+        {% else %}
+            <p id="block_cart_goods">В корзине ничего нет</p> {# не удалять! #}
+        {% endif %}
+
+        {% with request.user.buyer.order_set.get_unpaid_orders_list as unpaid_orders %}
+            {% if unpaid_orders|length > 0 %}
+                <p id="block_cart_orders"><a href="{% url cart %}#orders">{{ unpaid_orders|length }} {{ unpaid_orders|length|choose_plural:"неоплаченный заказ, неоплаченных заказа, неоплаченных заказов" }}</a></p>
+            {% else %}
+                <p id="block_cart_orders" style="display: none;"></p> {# не удалять! #}
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>

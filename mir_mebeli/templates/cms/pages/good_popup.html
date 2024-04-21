@@ -1,0 +1,39 @@
+{% load shop cart_tags thumbnail %}
+
+<div class="good-popup-wrapper">
+    <div class="pseudo-header-category"><div class="title">{{ good.get_name }}</div></div>
+    {% if good.price > 0 %}<div class="price">{{ good.price|price }} р.</div>{% endif %}
+    <div class="image">
+        {% thumbnail good.image "300x300" padding=True as img %}
+            <img src="{{ img.url }}" width="300" height="300" title="{{ good.get_name }}" />
+        {% empty %}
+            <img src="{{ MEDIA_URL }}images/noimage.jpg" width="300" height="300" title="{{ good.get_name }}" />
+        {% endthumbnail %}
+    </div>
+
+    <div class="desc">
+        {% with good.get_custom_fields as custom_fields %}
+            {% if custom_fields %}
+                <div class="custom-fields">
+                    {% for f in custom_fields.itervalues %}
+                        {% if f.value %}
+                            <div>
+                                {{ f.name }}: {{ f.value }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {{ good.short_description|linebreaks }}
+
+        {{ good.description|linebreaks }}
+    </div>
+
+    <div class="popup_bottom">
+      <div class="quantity">Количество: {% cart_set_quantity good cart 1 %}</div>
+
+      <div class="link">{% add_to_cart_link good cart 'В корзине' 'В корзину' %}</div>
+    </div>
+</div>

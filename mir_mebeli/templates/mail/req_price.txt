@@ -1,0 +1,7 @@
+Запрос срока доставки товара с сайта sklad51.ru
+
+Контактная информация
+Телефон: {{ price_request.phone }}
+Электронная почта: {{ price_request.email }}
+
+Ссылка на интересующий товар: http://sklad51.ru{{ price_request.good.get_absolute_url }}

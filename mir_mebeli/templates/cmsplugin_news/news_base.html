@@ -1,0 +1,11 @@
+{% extends 'cms/base.html' %}
+
+{% load menu_tags %}
+
+{% block content_class %}class="narrow"{% endblock %}
+
+{% block sidebar %}
+<div id="sidebar">
+    {% show_menu_below_id "company" 0 100 100 100 "cms/menu/about_menu.html" %}
+</div>
+{% endblock %}

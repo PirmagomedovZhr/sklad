@@ -1,0 +1,48 @@
+{% load shop pytils_numeral thumbnail %}
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Список покупок</title>
+    <link rel="shortcut icon" href="{{ MEDIA_URL }}favicon.ico" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/print.css" media="all" />
+</head>
+<body>
+
+<div id="content">
+    <div class='print_it r'><a onclick="window.print();" href='#'>Напечатать</a></div>
+
+    {% if request.user.is_authenticated %}
+        <div class="user-info">
+            <p>{{ request.user.buyer.get_full_name }}</p>
+            <p>{{ request.user.email }}</p>
+        </div>
+    {% endif %}
+
+    <div id="wishlist" class="cart cart-tab">
+        {# вишлист - товары #}
+        {% for item in wishlist.wishlist.get_items %}
+            {% with item.product as good %}
+                <div id="item_{{ good.pk }}" class="clear cart-good">
+                    <div class="title"><a href="{{ good.get_absolute_url }}">{{ good.get_name }}</a></div>
+                    <div class="image">
+                        {% thumbnail good.image "130x100" padding=True as img %}
+                            <img src="{{ img.url }}" width="130" height="100" title="{{ good.get_name }}" />
+                        {% empty %}
+                            <img src="{{ MEDIA_URL }}images/noimage.jpg" width="130" height="100" title="{{ good.get_name }}" />
+                        {% endthumbnail %}
+                    </div>
+                    <div class="desc">
+                        <p>Длина/Высота/Ширина (мм): <br />{% if good.dims %}<span class="dims">{{ good.dims }}</span>{% endif %}</p>
+                    </div>
+                    <div class="price"><p>Цена:</p><span class="pprice">{{ good.price|price }} р.</span></div>
+                    <div class="clear"></div>
+                </div>
+            {% endwith %}
+        {% endfor %}
+
+        <div class="clear"></div>
+    </div>
+</div>
+
+</body>
+</html>

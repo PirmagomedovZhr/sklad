@@ -1,0 +1,4 @@
+# dev
+django-devserver==0.5.0
+django-eml-email-backend
+django-debug-toolbar==0.8.4

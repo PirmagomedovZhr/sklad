@@ -1,0 +1,43 @@
+{% extends "cms/base.html" %}
+
+{% load cms_tags guestbook pytils_dt comments %}
+
+{% block content %}
+    {% include "block_cart.html" %}
+
+<div id="messages">
+    <h1>Гостевая книга</h1>
+<p>Уважаемые клиенты! Если у вас есть вопросы, предложения или пожелания - воспользуйтесь формой ниже. Мы обязательно вам ответим. Спасибо, что вы с нами!
+</p>
+    <div id="request_block">
+        <form action="{% url guestbook-add %}" method="POST" id="guestbook-form" class="clear">
+            {% csrf_token %}
+            <div class="guestbook-form clear">
+{% comment %}<!--                <div class="fio"><label for="id_fio">Имя:</label>{{ form.fio }}</div>-->
+<!--                <div class="email"><label for="id_email">E-mail:</label>{{ form.email }}</div>-->
+<!--                <div class="email"><label for="id_email">E-mail:</label>{{ form.email }}</div>-->{% endcomment %}
+                {{ form.as_p }}
+                <div class="clear"></div>
+                <div class="button">
+                    <input type="submit" value="Отправить" class="add_comment"/>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="clear"></div>
+
+    {% for message in page_obj.object_list %}
+        <div class="message">
+            <span id="username" class="name">{{ message.fio }}</span>&nbsp;<span class="date">{{ message.created|distance_of_time }}</span>
+            <div class="text user">
+                
+                {{ message.text|linebreaksbr }}
+            </div>
+        </div>
+        {% render_comment_list for message %}
+        {% if request.user.is_staff %}<div class="clear"></div>{% render_comment_form for message %}{% endif %}
+    {% endfor %}
+</div>
+    <div class="paginator-guestbook">{% include "pagination/base_pagination.html" %}</div>
+{% endblock %}

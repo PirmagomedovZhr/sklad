@@ -1,0 +1,10 @@
+{% load comments i18n %}
+<form class="comment-form" action="{% comment_form_target %}" method="post">{% csrf_token %}
+    <input type="hidden" name="next" value="{% url guestbook-index %}" />
+    {{ form.content_type }}{{ form.object_pk }}{{ form.timestamp }}{{ form.security_hash }}
+    {{ form.comment }}
+    <p class="submit">
+        <input type="submit" name="post" class="submit-post" value="Ответить" style="  float: left;
+  margin: 0 0 0 700px; cursor: pointer;" />
+    </p>
+</form>

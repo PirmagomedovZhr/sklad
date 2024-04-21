@@ -1,0 +1,33 @@
+{% extends "cms/base.html" %}
+
+{% load shop %}
+
+{% block blockinfo %}
+<div class="blockinfo">
+    <div class="main-info">
+        {% include "block_cart.html" %}
+
+        <div class="pseudo-header">Строительные материалы в Мурманске</div>
+
+        <div class="info-item"></br>
+            <img src="{{ MEDIA_URL }}/images/price-icon.png" style="float:left;position: absolute;margin: 20px 10px 0 20px;">
+            <p style="margin:15px 0 0 55px;">Всегда отличные цены</p>
+            <img src="{{ MEDIA_URL }}/images/basket-icon.png" style="float:left;position: absolute;margin: 20px 10px 0 20px;">
+            <p style="margin:15px 0 0 55px;">Заказ товаров прямо на сайте</p>
+            <img src="{{ MEDIA_URL }}/images/delivery-icon.png" style="float:left;position: absolute;margin: 20px 10px 0 20px;">
+            <p style="margin:5px 0 0 55px;">Доставка по Мурманску и Мурманской области</p>
+        </div>
+
+        <div class="main-info-content">
+            <p>Компания "Склад51" - это крупный склад строительных материалов в Мурманске.</p>
+            <p>Здесь вы всегда можете выбрать как экономичные, так и высококачественные стройматериалы из более, чем 3000 наименований.</p>
+
+            <p>Местоположение склада, объём реализации строительных материалов и торговая политика компании позволяют предложить вам множество стройматериалов по более низким ценам, чем в розничных строительных магазинах Мурманска.</p> <p>При этом, компания "Склад51" обслуживает частных лиц также, как и обычный магазин.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+    {% render_categories %}
+{% endblock %}

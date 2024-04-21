@@ -1,0 +1,15 @@
+.navigation li.selected a, .navigation li.ancestor a {
+    display:inline;
+}
+.navigation a:hover{
+    display:inline;
+}
+.row { width:748px; }
+.row, .row-info {
+    display:inline;
+}
+.bottom h6 { display:inline; }
+.box h6 { right:0px; }
+#content .message .text .triangle {background-repeat:no-repeat;}
+
+#sidebar ul li { border:none !important; }

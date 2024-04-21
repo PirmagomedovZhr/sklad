@@ -1,0 +1,45 @@
+{% extends 'cms/base.html' %}
+
+{% block title %}Ваш заказ принят!{% endblock %}
+
+{% block content %}
+
+{# Шаг 2.5 -- При оплате картой - переход на сайт банка #}
+
+<h2>Ваш заказ принят!</h2>
+
+<div class="go-bank" style="background: #fff;">
+    <div class="blue-border p20">
+        <p style="line-height: 200%;">
+            Спасибо за Ваш заказ!<br />
+            Пожалуйста, оплатите его картой Visa или Mastercard, выпущенной любым банком.<br />
+        </p>
+
+        {% with order.get_psbank_pay_form as pay_form %}
+            <form class="r buy_btn_yel" action="{{ pay_form.get_action_url }}" method="post">
+                {% for field in pay_form %}
+                    {{ field }}
+                {% endfor %}
+
+                <div class="buy_btn" style="line-height: normal;">
+                    <div class="button">
+                        <button type="submit" role="button" name="submit" class="button-as-link">
+                            <h2>Перейти к оплате</h2>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        {% endwith %}
+
+        <div class="clear"></div>
+
+        <p style="line-height: 200%;">
+            Для оплаты откроется страница нашего партнёра - "Промсвязьбанк".<br />
+            После завершения платежа Вы будете возвращены на сайт skald51.ru.
+        </p>
+
+        <p><a href="{% url cart %}#orders">Мои заказы</a> | <a href="/">Главная страница sklad51.ru</a></p>
+    </div>
+</div>
+
+{% endblock %}

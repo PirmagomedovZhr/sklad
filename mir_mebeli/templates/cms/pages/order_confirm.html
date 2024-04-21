@@ -1,0 +1,124 @@
+{% extends 'cms/base.html' %}
+
+{% load shop pytils_numeral thumbnail %}
+
+{% block title %}Подтверждение заказа{% endblock %}
+{% block header %}{% endblock %}
+{% block top-menu %}<div class="clear h47"></div>{% endblock %}
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+
+{# Шаг 2 -- Подтверждение заказа #}
+
+<h2>Подтверждение заказа</h2>
+
+<div class="cart-tab cart-order blue-border order-waiting">
+        <div class="tbl-header">
+            <div class="l w540"><span class="big-right-span">Состав заказа</span><a href="{% url cart %}">Изменить</a></div>
+            <div class="l w110">Количество</div>
+            <div class="l w85">Цена</div>
+            <div class="r w400"><span class="big-right-span">Параметры заказа</span><a href="{% url shop-order-checkout %}">Изменить</a></div>
+        </div>
+
+        <div class="l w750">
+            {% for item in cart.cart.get_items %}
+                {% with item.product as good %}
+                    <div class="clear order-good no-borders{% cycle ' odd' ' even' %}">
+                        <div class="image l">
+                            {% thumbnail good.image "100x70" padding=True as img %}
+                                <img src="{{ img.url }}" width="100" height="70" title="{{ good.get_name }}" />
+                            {% empty %}
+                                <img src="{{ MEDIA_URL }}images/noimage.jpg" width="100" height="70" title="{{ good.get_name }}" />
+                            {% endthumbnail %}
+                        </div>
+                        <div class="l w400 mr20">
+                            <div class="title">{{ good.get_name }}</div>
+
+                            {% comment %}<div class="desc">
+                            </div>{% endcomment %}
+                        </div>
+                            <div class="l w110 price"><span class="pprice2">{{ item.quantity }}</span></div>
+                            <div class="l w85 price"><span class="pprice2">{{ good.price|price }} р.</span></div>
+                    </div>
+                {% endwith %}
+            {% endfor %}
+            <div class="clear"></div>
+            <div class="order-deliver">
+                <div class="w130 l">
+                </div>
+
+                <div class="l w260 mr20">
+                    <p>Итого к оплате:</p>
+                </div>
+
+                <div class="r w85 price">
+                    {% if GLOBAL_DISCOUNT.ENABLED and not GLOBAL_DISCOUNT.EXPIRED and cart.global_discount.discount > 0 %}
+                        {% with cart.global_discount as global_discount %}
+                            <span class="pprice" title="Учтена скидка {{ global_discount.percent }}%.">{{ cart.total_price_with_global_discount|price }} р.</span>
+                        {% endwith %}
+                    {% else %}
+                        <span class="pprice">{{ cart.cached_total_price|price }} р.</span>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+        <div class="order-param">
+            <div>Продавец: ООО "Торговый дом", 183031, Мурманск, Свердлова 29/2</div>
+
+            <div style="margin-top: 10px;">Покупатель: {{ cart.cart.get_full_fio|default:"нет данных" }}</div>
+            <div>Адрес для доставки: {{ cart.cart.city.name|default:"нет данных" }}, {{ cart.cart.address }}</div>
+            <div>Телефон покупателя: {{ cart.cart.phone|default:"нет данных" }}</div>
+
+            <div style="margin-top: 10px;">
+                Оплата товаров:<br />
+                {{ cart.cart.get_payment_method }} &ndash;
+
+                {% if GLOBAL_DISCOUNT.ENABLED and not GLOBAL_DISCOUNT.EXPIRED and cart.global_discount.discount > 0 %}
+                    {% with cart.global_discount as global_discount %}
+                        <span class="pprice2" title="Учтена скидка {{ global_discount.percent }}%.">{{ cart.cost_with_global_discount|price }} р.</span>
+                    {% endwith %}
+                {% else %}
+                    <span class="pprice2">{{ cart.cached_cost|price }} р.</span>
+                {% endif %}
+            </div>
+
+            <div style="margin-top: 20px;">
+                {# форма согласия с условиями #}
+
+                <form action="" method="post">
+                    {% csrf_token %}
+
+                    <div class="form-errors">{{ form.non_field_errors }}</div>
+
+                    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+
+                    {% with form.tos as field %}
+                        <div id="{{ field.name }}" class="field clear">
+                            {{ field }} Нажимая кнопку "{% if cart.cart.is_card_payment %}Перейти к оплате{% else %}Подтвердить заказ{% endif %}", я принимаю <nobr><a class="register_agreement" href="/">Условия продажи</a></nobr>
+                            <div class="errors">{{ field.errors }}</div>
+                        </div>
+                    {% endwith %}
+
+                    <div class="clear"></div>
+
+                    <div class="buy_btn" style="margin: 10px 30px 10px 40px!Important;">
+                        <input type="submit" name="submit" value="Подтвердить заказ" class="button-as-link">
+                    </div>
+
+                    <div style="margin-top: 10px; padding-right: 10px; text-align: justify; font-size:12px;">
+                        {% if cart.cart.is_card_payment %}
+                            Ваш заказ будет отправлен в офис "Торгового дома" для бронирования товаров, затем Вы сможете перейти к его оплате.
+                        {% else %}
+                            Ваш заказ будет отправлен в офис "Торгового дома" и в ближайшее время наш менеджер свяжется с Вами. Позже, для оплаты заказа безналичным расчётом, Вам будет нужно распечатать и оплатить счёт.
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="clear"></div>
+
+</div>
+
+{% endblock %}

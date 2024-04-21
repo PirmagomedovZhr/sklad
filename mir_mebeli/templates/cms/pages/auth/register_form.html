@@ -1,0 +1,102 @@
+<form id="register_form" class="form2 ajax-form toggle-form not_active_form" action="{% url register-and-login %}" method="post" autocomplete="off">
+    {% csrf_token %}
+
+    <h3>Регистрация в магазине</h3>
+
+    <div class="form-errors">{{ form.non_field_errors }}</div>
+
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+
+    {% with form.email as field %}
+        <div id="{{ field.name }}" class="field clear">
+            <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+            {{ field }}
+            {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
+            <div class="errors">{{ field.errors }}</div>
+        </div>
+    {% endwith %}
+
+    {% with form.password1 as field %}
+        <div id="{{ field.name }}" class="field clear">
+            <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+            {{ field }}
+            {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
+            <div class="errors">{{ field.errors }}</div>
+        </div>
+    {% endwith %}
+
+    {% with form.password2 as field %}
+        <div id="{{ field.name }}" class="field clear">
+            <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+            {{ field }}
+            {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
+            <div class="errors">{{ field.errors }}</div>
+        </div>
+    {% endwith %}
+
+    {% with form.subscribe as field %}
+        <div id="{{ field.name }}" class="field clear">
+            {{ field }}
+            <div class="label">{{ field.label_tag }}{% if field.field.required %} <span class="required">*</span> {% endif %}</div>
+            {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
+            <div class="errors">{{ field.errors }}</div>
+        </div>
+    {% endwith %}
+
+    {% with form.tos as field %}
+        <div id="{{ field.name }}" class="field clear">
+            {{ field }}
+            <div class="label">{{ field.label_tag }}{% if field.field.required %} <span class="required">*</span> {% endif %}</div>
+            {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
+            <div class="errors">{{ field.errors }}</div>
+        </div>
+    {% endwith %}
+
+    <input type="hidden" name="next" value="{% firstof next '/' %}" />
+
+    <div class="button"><input type="submit" name="register" value="Зарегистрироваться" /></div>
+    <p>
+        Нажимая кнопку "Зарегистрироваться", я подтверждаю свою дееспособность и согласие на обработку персональных данных
+        в соответствии с указанным <a class="register_agreement" href="{% url register-agreement %}">здесь</a> текстом.
+    </p>
+
+    <div class="message"></div>
+</form>
+
+<script type="text/javascript">
+    // show agreement
+    $(function() {
+        var $loading = $('<img src="{{ MEDIA_URL }}images/loading-small.gif" alt="Загрузка..." class="loading">');
+
+        $('a.register_agreement').each(function() {
+            // prevent link double init
+            var dlgcreated = $(this).attr('dlgcreated');
+            if (dlgcreated == 'true')
+                return false;
+
+            $(this).attr('dlgcreated', true);
+
+            var $dialog = $('<div></div>').append($loading.clone());
+            var $link = $(this).one('click', function() {
+                $dialog
+                    .load($link.attr('href'))
+                    .dialog({
+                        title: $link.attr('title'),
+                        width: 860,
+                        height: 500,
+                        modal: true,
+                        position: 'center'
+                    });
+
+                $link.click(function() {
+                    $dialog.dialog('open');
+                    return false;
+                });
+
+                return false;
+            });
+        });
+    });
+</script>

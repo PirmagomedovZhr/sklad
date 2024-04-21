@@ -1,0 +1,21 @@
+{% if catalog_breadcrumb %}
+    <div class="breadcrumb" xmlns:v="http://rdf.data-vocabulary.org/#">
+        {% for ancestor in catalog_breadcrumb|slice:":-1" %}
+            <span typeof="v:Breadcrumb"><a href="{{ ancestor.url }}" rel="v:url" property="v:title">{{ ancestor.title }}</a> › </span>
+        {% endfor %}
+    {% with catalog_breadcrumb|last as last %}
+        <span>{{ last.title }}</span>
+    {% endwith %}
+    </div>
+{% else %}
+    {% if ancestors|slice:":-1" %}
+        <div class="breadcrumb" xmlns:v="http://rdf.data-vocabulary.org/#">
+            {% for ancestor in ancestors|slice:":-1" %}
+                <span typeof="v:Breadcrumb"><a href="{{ ancestor.get_absolut_url }}" rel="v:url" property="v:title">{{ ancestor.title }}</a> › </span>
+            {% endfor %}
+            {% with ancestors|last as last %}
+                <span>{{ last.title }}</span>
+            {% endwith %}
+        </div>
+    {% endif %}
+{% endif %}

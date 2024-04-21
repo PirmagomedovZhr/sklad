@@ -1,0 +1,14 @@
+{% load thumbnail %}
+
+<div class="shop">
+    {% thumbnail shop.image "160x120" padding=True as img %}
+        <a href="{{ shop.get_absolute_url }}" class="shop_image" style="background-image: url({{ img.url }})"></a>
+    {% empty %}
+        {% thumbnail "images/noimage.jpg" "155x115" as noimg %}
+            <a href="{{ shop.get_absolute_url }}" class="shop_image" style="background-image: url({{ noimg.url }})"></a>
+        {% endthumbnail %}
+    {% endthumbnail %}
+
+    <div class="align-center"><span class="shop_name"><a href="{{ shop.get_absolute_url }}">{{ shop.name|linebreaksbr }}</a></span></div>
+    <div class="align-center"><span class="shop_address">{{ shop.address }}</span></div>
+</div>

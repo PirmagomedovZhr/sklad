@@ -1,0 +1,9 @@
+{% if already_in_cart %}
+    <span class="in_cart">
+         <a href="{% url cart %}">{{ text }}</a>
+    </span>
+{% else %}
+    <span class="add_cart">
+        <a class="add_cart" href="{% url add_to_cart good_id %}">{{ text }}</a>
+    </span>
+{% endif %}

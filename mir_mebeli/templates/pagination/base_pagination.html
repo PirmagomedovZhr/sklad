@@ -1,0 +1,38 @@
+{% load i18n %}
+
+{% block paginator %}
+<div id="paginator" class="clear ui-corner-left">
+	{% if is_paginated and paginator.num_pages > 1 %}
+        <ul class="list clear">
+            {% if page_obj.has_previous %}
+                <li class="prev"><a href="?page={{ page_obj.previous_page_number }}{{ getvars }}"> &larr; </a></li>
+            {% endif %}
+
+            {% for page in pages %}
+                {% if page %}
+                    <li{% ifequal page page_obj.number %} class="sel"{% endifequal %}>
+                        <a href="?page={{ page }}{{ getvars }}">{{ page }}</a>
+                        {% if not forloop.last %}<span class='three_dots'>&nbsp</span></li>{% endif %}
+                {% else %}
+                    <li><span>…</span></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="next"><a href="?page={{ page_obj.next_page_number }}{{ getvars }}">&rarr;</a></li>
+            {% endif %}
+        </ul>
+
+        {% block pagination_form %}
+            <form action="" method="get" autocomplete="off">
+                {{ pagination_form_text|default:'Вывести товары по' }}
+                <select name="pp" id="perPage" onchange="window.location.href='?pp='+$(this).val()+'{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.cat %}&cat={{ request.GET.cat }}{% endif %}'">
+                    {% for value in pagination_allowed_values %}
+                        <option{% ifequal paginator.per_page value %} selected="true"{% endifequal %}>{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        {% endblock %}
+	{% endif %}
+</div>
+{% endblock %}

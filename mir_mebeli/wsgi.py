@@ -1,0 +1,9 @@
+# -*- coding: utf-8 -*-
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mir_mebeli.settings")
+
+import django.core.handlers.wsgi
+application = django.core.handlers.wsgi.WSGIHandler()

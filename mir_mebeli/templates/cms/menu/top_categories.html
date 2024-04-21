@@ -1,0 +1,34 @@
+{#{% load cms_tags cache menu_tags my_menu_tags %}#}
+
+{# 7 первых основных рубрик #}
+<table class="navigation">
+<tr>
+{#{% for child in children|parent_namespace:"Categories"|slice:":8" %}#}
+{% for child in catalog_category_menu|slice:":8" %}
+{#    {% if child.attr.basic %}#}
+    {% if child.basic %}
+        <td class="{% if forloop.last %}no-line {% endif %}{% if child.selected %}selected{% endif %}{% if child.ancestor %}ancestor{% endif %}{% if child.sibling %}sibling{% endif %}{% if child.descendant %}descendant{% endif %}">
+            <a href="{{ child.get_absolute_url }}">{{ child.get_menu_title }}</a>
+            <div class="sub_menu_block">
+                <div class="clear-border"></div>
+                <h2>
+                    <a href="{{ child.get_absolute_url }}">{{ child.get_menu_title }}</a>
+                    <div class='news-actions'>
+                        <a href="{{ child.get_absolute_url }}new/" class="news">НОВИНКИ</a>
+                        <a href="{{ child.get_absolute_url }}sale/" class="sales">РАСПРОДАЖА</a>
+                    </div>
+                </h2>
+                <div>
+{#                    {% for desc in child.children|parent_namespace:"Categories" %}#}
+                    {% for desc in child.children %}
+                        <a href="{{ desc.get_absolute_url }}">
+                            {{ desc.get_menu_title }}{% if not forloop.last %}, {% endif %}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </td>
+    {% endif %}
+{% endfor %}
+</tr>
+</table>

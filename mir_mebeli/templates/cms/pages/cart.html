@@ -1,0 +1,377 @@
+{% extends 'cms/base.html' %}
+
+{% load shop pytils_numeral thumbnail %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+
+    <script src="{{ MEDIA_URL }}js/cart.js?t=1450258153"></script>
+
+    <script>
+        $(function() {
+            $.balloon.defaults.css.backgroundColor = null;
+            $.balloon.defaults.css.border = null;
+            $.balloon.defaults.css.borderRadius = null;
+            $.balloon.defaults.css.boxShadow = null;
+            $.balloon.defaults.css.opacity = null;
+            $('.na_zakaz_help').balloon({
+                position: 'top left',
+                offsetX: 10,
+                offsetY: -10,
+                classname: 'na_zakaz_help_balloon',
+                contents: '<div class="contents">'
+                    + 'Этот товар временно отсутствует, но очень скоро будет.<br />'
+                    + 'Добавьте его к своему заказу, чтобы мы сообщили вам его цену и срок доставки.<br />'
+                    + 'Если вас не устроит цена или срок, вы легко сможете отказаться от этого товара.<br />'
+                    + '</div>'
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+
+{% if back_url %}
+    <div class="back_url">
+        <a href="{{ back_url }}">&larr; Назад</a>
+    </div>
+{% endif %}
+
+{% if request.user.is_authenticated %}
+    <div class="tabs">
+        <ul class="tab-nav">
+            <li><a class="" href="#cart">Моя корзина</a></li>
+            <li><a class="" href="#orders">Мои заказы</a></li>
+            <li><a class="" href="#profile">Мои данные</a></li>
+        </ul>
+{% else %}
+    <h1>Ваша корзина</h1>
+{% endif %}
+
+{# корзина #}
+{% if cart.cached_is_empty %}
+    {% if request.user.is_authenticated %}
+        <div id="cart" class="cart cart-tab">
+            <h2 class="align-center">{% if message %}{{ message }}{% else %}Ваша корзина пуста.</br> Перейдите в <a href="http://{{ request.get_host }}/">каталог</a>, чтобы выбрать необходимые товары.{% endif %}</h2>
+        </div>
+    {% else %}
+        <h2 class="align-center">{% if message %}{{ message }}{% else %}Ваша корзина пуста{% endif %}</h2>
+    {% endif %}
+{% else %}
+    <div id="cart" class="cart cart-tab">
+        <div class='print_it r'><a onclick="window.print();" href='#'>Напечатать</a></div>
+
+        {% for item in cart.cached_get_goods_dict.itervalues %}
+            {% with item.product as good %}
+                <div id="item_{{ good.pk }}" class="clear cart-good">
+                    <a class="image good-popup-trigger" href="#good_{{ good.pk }}" title="{{ good.get_name }}" data-name="{{ good.pk }}" data-url="{{ good.get_absolute_url }}">
+                        {% thumbnail good.image "130x130" padding=True as img %}
+                            <img src="{{ img.url }}" width="130" height="130" title="{{ good.get_name }}" />
+                        {% empty %}
+                            <img src="{{ MEDIA_URL }}images/noimage.jpg" width="130" height="130" title="{{ good.get_name }}" />
+                        {% endthumbnail %}
+                    </a>
+
+                    <div class="title">{{ good.get_name }}</div>
+                    {% comment %}<div class="desc">
+                    </div>{% endcomment %}
+                    <div class="price">Цена: <span class="pprice">{{ good.price|price }} р.</span></div>
+                    <div class="quantity">
+                        <div>
+                            Количество:<input id="item_qty_{{ good.pk }}" type="text" value="{{ item.quantity }}" autocomplete="off" />
+                            <div class="arrows">
+                                <a id="item_qty_inc_{{ good.pk }}" href="{% url cart-qty-inc good.pk %}" class="item-qty-inc" title="Больше">&#x25B2;</a>
+                                <a id="item_qty_dec_{{ good.pk }}" href="{% url cart-qty-dec good.pk %}" class="item-qty-dec" title="Меньше">&#x25BC;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="total-price">
+                        {% if not good.is_really_available %}
+                            <div class="na_zakaz_help">
+                                <img src="{{ MEDIA_URL }}images/icon-help.png" alt="Справка для товаров на заказ" title="Справка" />
+                            </div>
+                        {% endif %}
+                        <div style="float: left;">
+
+                            <span class="pprice">{{ item.total_price|price }} р.</span>
+                        </div>
+                    </div>
+                    <div class="del">
+                        <a class="good_del" title="Удалить" href="{% url remove_from_cart good.pk %}">
+                            Удалить товар
+                        </a>
+                    </div>
+                    <div class="clear"></div>
+                    {% comment %}{% if is-absent %} {# TODO: товар отсутствует на складе #}
+                        <div class="is-absent">Этот товар отсутствует на складе, но будет доставлен по Вашему заказу. Максимальный срок доставки - не более 60 дней.</div>
+                    {% endif %}{% endcomment %}
+                </div>
+
+                <div id="good_popup_{{ good.pk }}" class="ow-closed good-popup">
+                    <a class="close-btn" href="#" title="Закрыть"></a>
+                </div>
+            {% endwith %}
+        {% endfor %}
+
+        <div class="clear"></div>
+
+{#        <a class="reg_order" href="#" onclick="$('#reg-form').dialog('open');{% if request.user.is_authenticated %}$('#tabs').tabs('select', 1);{% endif %}return false;" title="Регистрация и оформление">#}
+
+        <div class="delivery clear">
+            <div style="font-size: 21px; color: #3d3d3d;">Доставка оговаривается по телефону с менеджером.</div>
+        </div>
+
+        <div class="clear" style="margin: 13px 0;">
+            <div id="total_price_block">
+                <div id="total_price" >
+                    Общая стоимость:<br /><span class="pprice">{{ cart.cached_total_price|price }} р.</span>
+                </div>
+
+                {% if not request.user.is_authenticated %}
+                    <div class="buy_btn">
+                        <a id="order_noreg" href="#order_noreg" title="Оформление заказа без регистрации">
+                            Заказать в один клик
+                        </a>
+                        <div style="font-size: 13px; text-align: center;">Оплата только наличными при получении</div>
+                    </div>
+
+                    <div style="float: left; font-size: 18px; margin: 25px 0 0 265px;">~ или ~</div>
+                {% endif %}
+
+                <div class="buy_btn">
+                    <a id="order_checkout" href="{% url shop-order-checkout %}" title="Оформление заказа">
+                        Оформить заказ
+                    </a>
+                </div>
+
+                {% if GLOBAL_DISCOUNT.ENABLED and not GLOBAL_DISCOUNT.EXPIRED and cart.global_discount.discount > 0 %}
+                    {% with cart.global_discount as global_discount %}
+                        <div id="total_discount">
+                            Скидка <span class="ppercent">{{ global_discount.percent }}</span>%:<br /><span class="pprice">- {{ global_discount.discount|price }} р.</span>
+                        </div>
+                    {% endwith %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="clear"></div>
+    </div>
+{% endif %}
+
+{# заказы #}
+{#{% if request.user.is_authenticated or request.user.buyer.order_set.all %}#}
+{% if request.user.is_authenticated %}
+    <div id="orders" class="cart-tab">
+    <div class='print_it r'><a onclick="window.print();" href='#'>Напечатать</a></div>
+        {% include 'cms/pages/my_orders.html' %} {# текущие заказы #}
+
+        {% include 'cms/pages/finished_orders.html' %} {# предыдущие заказы #}
+    </div>
+{% endif %}
+
+{# вишлист #}
+{% if request.user.is_authenticated %}
+    <div id="wishlist" class="cart cart-tab">
+        {% if wishlist.is_empty %}
+            <h2 class="align-center">Ваш список покупок пуст</h2>
+        {% else %}
+            <div class='print_it r'><a href="{% url wishlist_print %}" target="_blank">Версия для печати</a></div>
+
+            {% include 'cms/pages/my_wishlist.html' %}
+        {% endif %}
+    </div>
+{% endif %}
+
+{# данные покупателя #}
+{% if request.user.is_authenticated %}
+    <div id="profile" class="cart-tab mydata">
+
+        {% if profile_form %}
+            {# редактирование реквизитов покупателя #}
+            {% with profile_form as form %}
+                <form id="profile_form" class="form2 ajax-form toggle-form active_form" action="{% url profile-edit %}" method="post">
+                    {% csrf_token %}
+
+                    <div class="form-errors">{{ form.non_field_errors }}</div>
+
+                    {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                    <h3>Информация о покупателе</h3>
+                    <div class="col1">
+
+                        {% with form.last_name as field %}
+                            <div id="{{ field.name }}" class="field clear">
+                                <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                                {{ field }}
+                                <div class="errors">{{ field.errors }}</div>
+                            </div>
+                        {% endwith %}
+
+                        {% with form.first_name as field %}
+                            <div id="{{ field.name }}" class="field clear">
+                                <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                                {{ field }}
+                                <div class="errors">{{ field.errors }}</div>
+                            </div>
+                        {% endwith %}
+
+                        {% with form.mid_name as field %}
+                            <div id="{{ field.name }}" class="field clear">
+                                <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                                {{ field }}
+                                <div class="errors">{{ field.errors }}</div>
+                            </div>
+                        {% endwith %}
+
+                        {% with form.city as field %}
+                            <div id="{{ field.name }}" class="field clear">
+                                <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                                {{ field }}
+                                <div class="errors">{{ field.errors }}</div>
+                            </div>
+                        {% endwith %}
+
+                        {% with form.address as field %}
+                            <div id="{{ field.name }}" class="field clear">
+                                <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                                {{ field }}
+                                <div class="errors">{{ field.errors }}</div>
+                            </div>
+                        {% endwith %}
+                    </div>
+
+                    <div class="col2">
+                        {% with form.phone as field %}
+                            <div id="{{ field.name }}" class="field clear">
+                                <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                                {{ field }}
+                                <div class="errors">{{ field.errors }}</div>
+                            </div>
+                        {% endwith %}
+
+                        {% with form.email as field %}
+                            <div id="{{ field.name }}" class="field clear">
+                                <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                                {{ field }}
+                                <div class="errors">{{ field.errors }}</div>
+                            </div>
+                        {% endwith %}
+
+                        {% with form.subscribe as field %}
+                            <div id="{{ field.name }}" class="field clear">
+                                {{ field }}
+                                <div class="label">{{ field.label_tag }}{% if field.field.required %} <span class="required">*</span> {% endif %}</div>
+                                <div class="errors">{{ field.errors }}</div>
+                            </div>
+                        {% endwith %}
+
+                    </div>
+                    <div class="clear"></div>
+                    <div class="button clear"><input type="submit" value="Сохранить данные" /></div>
+                    <div class="message"></div>
+
+                </form>
+            {% endwith %}
+        {% endif %}
+
+        {# изменение пароля #}
+        {% if change_password_form %}
+            {% with change_password_form as form %}
+                <form id="change_password_form" class="form2 ajax-form toggle-form not_active_form" action="{% url change-password %}" method="post">
+                    {% csrf_token %}
+
+
+                    {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+
+                    <h3>Сменить пароль для входа</h3>
+                    <div class="form-errors">{{ form.non_field_errors }}</div>
+
+                    <div class="clear"></div>
+                    {% with form.old_password as field %}
+                        <div id="{{ field.name }}" class="field clear">
+                            <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                            {{ field }}
+                            <div class="errors">{{ field.errors }}</div>
+                        </div>
+                    {% endwith %}
+
+                    {% with form.password1 as field %}
+                        <div id="{{ field.name }}" class="field clear">
+                            <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                            {{ field }}
+                            {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
+                            <div class="errors">{{ field.errors }}</div>
+                        </div>
+                    {% endwith %}
+
+                    {% with form.password2 as field %}
+                        <div id="{{ field.name }}" class="field clear">
+                            <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                            {{ field }}
+                            <div class="errors">{{ field.errors }}</div>
+                        </div>
+                    {% endwith %}
+
+                    {% with form.captcha as field %}
+                        <div id="{{ field.name }}" class="field clear">
+                            <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                            {{ field }}
+                            <div class="errors">{{ field.errors }}</div>
+                        </div>
+                    {% endwith %}
+
+                    <div class="button"><input type="submit" value="Сменить пароль" /></div>
+
+                    <div class="message"></div>
+                </form>
+            {% endwith %}
+        {% endif %}
+    </div>
+{% endif %}
+
+{% if request.user.is_authenticated %}
+    </div> {# closes <div class="tabs"> #}
+{% endif %}
+
+{# форма заказа без регистрации #}
+{% if not request.user.is_authenticated %}
+    <div style="display: none;">
+    {% with order_noreg_form as form %}
+        <form id="order_noreg_form" class="form2 ajax-form dialog-form" action="{% url shop-order-noreg %}" method="post" title="Оформление заказа без регистрации" autocomplete="off">
+            {% csrf_token %}
+
+            <div class="form-errors">{{ form.non_field_errors }}</div>
+
+            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+
+            {% with form.name as field %}
+                <div id="{{ field.name }}" class="field clear">
+                    <div class="label">{{ field.label_tag }}</div>
+                    {{ field }}
+                    <div class="errors">{{ field.errors }}</div>
+                </div>
+            {% endwith %}
+
+            {% with form.phone as field %}
+                <div id="{{ field.name }}" class="field clear">
+                    <div class="label">{{ field.label_tag }}</div>
+                    {{ field }}
+                    <div class="errors">{{ field.errors }}</div>
+                </div>
+            {% endwith %}
+
+            <div class="button">
+                <input type="submit" name="submit" value="Заказать" class="button-as-link">
+            </div>
+        </form>
+    {% endwith %}
+    </div>
+{% endif %}
+
+{% endblock %}

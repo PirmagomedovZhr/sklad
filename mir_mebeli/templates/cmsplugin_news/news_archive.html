@@ -1,0 +1,15 @@
+{% extends 'cmsplugin_news/news_base.html' %}
+{% load pagination_tags %}
+{% block content %}
+<div class="news">
+    {% if latest %}
+        {% autopaginate latest 25 %}
+        {% for object in latest %}
+            {% include 'cmsplugin_news/news_detail_embedded.html' %}
+        {% endfor %}
+        <div class="paginator_news">{% paginate %}</div>
+    {% else %}
+        <h2 class="align-center">Нет опубликованных новостей</h2>
+    {% endif %}
+</div>
+{% endblock %}

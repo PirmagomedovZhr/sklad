@@ -1,0 +1,12 @@
+<table class="navigation">
+<tr>
+    <td class="category-popup-trigger">
+        <a href="/">Каталог товаров</a>
+    </td>
+{% for child in children %}
+    <td class="{% if forloop.last %}no-line {% endif %}{% if child.selected %}selected{% endif %}{% if child.ancestor %}ancestor{% endif %}{% if child.sibling %}sibling{% endif %}{% if child.descendant %}descendant{% endif %}">
+        <a href="{{ child.get_absolute_url }}">{{ child.get_menu_title }}</a>
+    </td>
+{% endfor %}
+</tr>
+</table>

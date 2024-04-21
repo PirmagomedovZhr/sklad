@@ -1,0 +1,111 @@
+{% extends 'cms/base.html' %}
+
+{% load shop pytils_numeral %}
+
+{% block title %}Оформление заказа{% endblock %}
+{% block header %}{% endblock %}
+{% block top-menu %}<div class="clear h47"></div>{% endblock %}
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+
+{# Шаг 1 -- Оформление заказа #}
+
+<div>
+    <h2>Оформление заказа</h2>
+
+    <form id="order_form" class="form2" action="{% url shop-order-checkout %}" method="post">
+        {% csrf_token %}
+
+        <div class="form-errors">{{ form.non_field_errors }}</div>
+
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+
+        <div class="col1">
+            <h3>Доставка</h3>
+
+            <div class="clear"></div>
+
+            {% with form.city as field %}
+                <div id="{{ field.name }}" class="field clear">
+                    <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                    {{ field }}
+                    <div class="errors">{{ field.errors }}</div>
+                </div>
+            {% endwith %}
+
+            {% with form.address as field %}
+                <div id="{{ field.name }}" class="field clear">
+                    <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                    {{ field }}
+                    <div class="errors">{{ field.errors }}</div>
+                </div>
+            {% endwith %}
+
+            {% with form.phone as field %}
+                <div id="{{ field.name }}" class="field clear">
+                    <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                    {{ field }}
+                    <div class="errors">{{ field.errors }}</div>
+                </div>
+            {% endwith %}
+        </div>
+
+        <div class="col2">
+            <h3>Получатель</h3>
+
+            <div class="clear"></div>
+
+            {% with form.last_name as field %}
+                <div id="{{ field.name }}" class="field clear">
+                    <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                    {{ field }}
+                    <div class="errors">{{ field.errors }}</div>
+                </div>
+            {% endwith %}
+
+            {% with form.first_name as field %}
+                <div id="{{ field.name }}" class="field clear">
+                    <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                    {{ field }}
+                    <div class="errors">{{ field.errors }}</div>
+                </div>
+            {% endwith %}
+
+            {% with form.mid_name as field %}
+                <div id="{{ field.name }}" class="field clear">
+                    <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+                    {{ field }}
+                    <div class="errors">{{ field.errors }}</div>
+                </div>
+            {% endwith %}
+        </div>
+
+        <div class="col3">
+            <h3>Способ оплаты </h3>
+
+            <div class="clear"></div>
+
+            {% with form.payment_method as field %}
+                <div id="{{ field.name }}" class="field clear">
+{#                <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>#}
+                    {{ field }}
+                    <div class="errors">{{ field.errors }}</div>
+                </div>
+            {% endwith %}
+
+            <div style="font-style: italic; display:none;">Доставка оплачивается только наличными, отдельно, при получении товара.</div>
+
+            <div class="clear"></div>
+
+            <div class="buy_btn">
+                    <button type="submit" role="button" name="submit" class="button-as-link">Продолжить</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

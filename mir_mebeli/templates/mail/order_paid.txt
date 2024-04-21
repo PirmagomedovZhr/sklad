@@ -1,0 +1,17 @@
+Оплачен заказ на сайте sklad51.ru
+
+Заказчик:
+
+Контактное лицо: {{ order.get_full_fio }}
+Город: {{ order.city }}
+Адрес: {{ order.address }}
+Телефон: {{ order.phone }}
+
+Информация о проведенной оплате:
+
+Номер Заказа: {{ oper.order }}
+Дата операции: {{ oper.timestamp }}
+Стоимость Заказа: {{ oper.amount }} руб.
+Имя клиента (оплатившего заказ): {{ oper.name }}
+
+Ссылка на страницу заказа: http://sklad51.ru{% url admin:shop_order_change order.pk %}

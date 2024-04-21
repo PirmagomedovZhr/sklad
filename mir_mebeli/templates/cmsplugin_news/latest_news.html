@@ -1,0 +1,22 @@
+<div class="latest-news clear">
+{% if latest %}
+    <h3>Новости</h3>
+    <ul class="list-news news-left">
+    {% for news in latest|slice:":2" %}
+	    <li>
+	        <a class="news-title" href="{{ news.get_absolute_url }}">{{ news.title }}</a>
+	        <div class="exerpt-news">{{ news.excerpt }}</div>
+	    </li>
+    {% endfor %}
+    </ul>
+    <ul class="list-news news-right">
+    {% for news in latest|slice:"2:" %}
+	    <li>
+	        <a class="news-title" href="{{ news.get_absolute_url }}">{{ news.title }}</a>
+	        <div class="exerpt-news">{{ news.excerpt }}</div>
+	    </li>
+    {% endfor %}
+    </ul>
+{% endif %}
+</div>
+

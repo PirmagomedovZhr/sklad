@@ -1,0 +1,18 @@
+{% load shop thumbnail %}
+
+{% if categories %}
+
+{% for cat in categories %}
+    <div class="category">
+        <a class="image" title="{{ cat.name }}" href="{{ cat.get_absolute_url }}">
+            {% thumbnail cat.image "196x115" padding=True as img %}
+                <img src="{{ img.url }}"  title="{{ cat.name }}" alt="{{ cat.name }}" />
+            {% empty %}
+                <img src="{{ MEDIA_URL }}images/noimage.jpg" title="{{ cat.name }}" alt="{{ cat.name }}" />
+            {% endthumbnail %}
+        </a>
+        <h2><a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></h2>
+    </div>
+{% endfor %}
+
+{% endif %}

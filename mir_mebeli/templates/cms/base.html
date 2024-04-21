@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block dialogs %}
+	{% comment %}
+    <form id="req-price-form" action="" method="post" title="Запрос срока доставки товара">
+		<div class="errors-layout"></div>
+        <div class="header-text">
+            Оставьте свои контакты и наш менеджер свяжется с вами, чтобы узнать о ваших предпочтениях (комплектация, размеры, цвета, материалы) и рассчитает вам цену этого товара.
+        </div>
+		{{ dialogs.req_price.as_p }}
+		<div><input type="submit" id="req-price-submit" value="Запросить срок доставки"/></div>
+	</form>
+    {% endcomment %}
+
+	<div id="dialog-message"></div>
+{% endblock %}
+
+{% block register_and_login_dialog %}
+    <div id="register_and_login_dialog" title="Вход и регистрация">
+        {% with dialogs.next as next %}
+            <div style="float: left;">
+                {% with dialogs.login_form as form %}
+                    {% include 'cms/pages/auth/login_form.html' %}
+                {% endwith %}
+
+                {% with dialogs.reset_form as form %}
+                    {% include 'cms/pages/auth/reset_form.html' %}
+                {% endwith %}
+            </div>
+
+            <div style="float: left;">
+                {% with dialogs.register_form as form %}
+                    {% include 'cms/pages/auth/register_form.html' %}
+                {% endwith %}
+            </div>
+        {% endwith %}
+    </div>
+{% endblock %}
+
+{% block extrahead %}
+    {% if not login_form and not reset_form and not register_form %} {# только если не страница входа/регистрации #}
+        <script type="text/javascript">
+            // login/register dialog
+            $(function() {
+                $('#register_and_login_dialog').dialog({
+                    modal: true,
+                    autoOpen: false,
+                    resizable: false,
+                    //draggable: false,
+                    dialogClass: 'fixed',
+                    minHeight: 610,
+                    width: 'auto',
+                    height: 'auto'
+                });
+
+                $('a#login_link, a#register_link').click(function() {
+                    $('#register_and_login_dialog').dialog('open');
+                    return false;
+                });
+            });
+        </script>
+    {% endif %}
+
+    <script type="text/javascript">
+        // show/hide login/reset form
+        $(function() {
+            var login_form = $('form#login_form');
+            var reset_form = $('form#reset_form');
+
+            reset_form.hide();
+
+            $('a#show_login_form').click(function() {
+                reset_form.hide();
+                login_form.show();
+            });
+
+            $('a#show_reset_form').click(function() {
+                login_form.hide();
+                reset_form.show();
+            });
+        });
+
+        $(function() {
+            $(".toggle-form input").live("focus", function(e){
+                $(".toggle-form").removeClass("active_form");
+                $(".toggle-form").addClass("not_active_form");
+                $(this).closest(".toggle-form").removeClass("not_active_form");
+                $(this).closest(".toggle-form").addClass("active_form");
+            });
+        });
+    </script>
+{% endblock %}

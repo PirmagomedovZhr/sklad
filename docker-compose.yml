@@ -1,0 +1,95 @@
+version: '2'
+
+services:
+
+    web:
+        restart: always
+        container_name: sklad-web
+        build: .
+        environment:
+            - DEBUG=False
+        volumes:
+            - ./:/opt/app
+            - ./ftp:/ftp
+        ports:
+            - "32780:80"
+        depends_on:
+            - db
+
+    db:
+        restart: always
+        container_name: sklad-db
+        image: postgres:latest
+        expose:
+            - "5432"
+        volumes:
+            - ./db:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_USER=new_sklad51
+            - POSTGRES_PASSWORD=new_sklad51
+            - POSTGRES_DB=new_sklad51
+
+    sftp:
+        restart: always
+        container_name: sklad-sftp
+        image: atmoz/sftp
+        volumes:
+            - ./ftp:/home/sklad51
+            - ./conf/sftp-users.conf:/etc/sftp-users.conf:ro
+            - ./conf/sftp-init.sh:/etc/sftp.d/init.sh:ro
+        ports:
+            - "10122:22"
+
+    minio:
+        restart: always
+        image: minio/minio
+        container_name: sklad-minio
+        volumes:
+            - ./backup:/export/backup
+            - ./ftp:/export/ftp
+        ports:
+            - "32781:9000"
+        environment:
+            - MINIO_ACCESS_KEY=NKZ1L29S4GP01J6IOD6F
+            - MINIO_SECRET_KEY=5w2WzW3Y6wNQbdQEADYD2USWlvx9vh4j+fgYOd4b
+        command: server /export
+
+    backupdb:
+        restart: always
+        container_name: sklad-backupdb
+        environment:
+            - POSTGRES_DB=new_sklad51
+            - POSTGRES_HOST=db
+            - POSTGRES_USER=new_sklad51
+            - POSTGRES_PASSWORD=new_sklad51
+            - POSTGRES_PORT=5432
+            - CRON_TIME='0 0 * * *'
+            - INIT_BACKUP='true'
+            - MINIO_ACCESS_KEY=NKZ1L29S4GP01J6IOD6F
+            - MINIO_HOST=localhost
+            - MINIO_HOST_URL=http://minio:9000
+            - MINIO_SECRET_KEY=5w2WzW3Y6wNQbdQEADYD2USWlvx9vh4j+fgYOd4b
+            - MINIO_BUCKET=sklad-backup
+            - RESTIC_FORGET='-l 3'
+            - MAX_BACKUPS=4
+        build:
+            context: .
+            dockerfile: conf/postgres-backup/Dockerfile
+        links:
+            - db:postgres
+            - minio:minio
+        volumes:
+            - ./backup:/backup
+
+    phpPgAdmin:
+        restart: always
+        container_name: sklad-phppgadmin
+        image: fizix/docker-pgadmin:php-fpm-environment
+        environment:
+            - POSTGRESQL_HOST=db
+            - POSTGRESQL_PORT=5432
+            - POSTGRESQL_DEFAULT_DB=new_sklad51
+        ports:
+            - "32782:80"
+        links:
+            - db

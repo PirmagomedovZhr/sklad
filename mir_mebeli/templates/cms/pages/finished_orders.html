@@ -1,0 +1,30 @@
+{% load shop pytils_numeral %}
+
+{# предыдущие заказы #}
+{% with request.user.buyer.order_set.get_finished_orders_list as finished_orders %}
+    {% if finished_orders %}
+        <div class="prev-orders">
+            <h2 class="list_order_title">Ваши предыдущие заказы{% if cart.discount.percent.1 %} <span>( скидка на последующие заказы {{ cart.discount.percent.1 }}% )</span>{% endif %}</h2>
+
+            <div class="clear"></div>
+
+            <table class="list_order">
+                <tr>
+                    <th>Номер заказа и дата оформления</th>
+                    <th>Кол-во товаров</th>
+                    <th>Сумма заказа</th>
+                    <th>Статус заказа</th>
+                </tr>
+
+                {% for order in finished_orders %}
+                    <tr>
+                        <td><a href="{% url shop-order-info order.pk %}">№{{ order.pk }} - {{ order.create_date|date:"d.m.Y" }}</a></td>
+                        <td>{{ order.items.count }} {{ order.items.count|choose_plural:"товар, товара, товаров" }}</td>
+                        <td>{{ order.sum|price }} р.</td>
+                        <td>{{ order.get_status_display|capfirst }} {% if order.is_done %}{{ order.done_date|date:"d.m.Y" }}{% else %}{% if order.is_canceled %}{{ order.cancel_date|date:"d.m.Y" }}{% endif %}{% endif %}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+{% endwith %}

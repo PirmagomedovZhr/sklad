@@ -1,0 +1,36 @@
+{% extends 'cms/base.html' %}
+
+{% block title %}Отмена заказа № {{ order.pk }}{% endblock %}
+
+{% block content %}
+
+<div style="width: 320px;">
+    <h2>Отмена заказа № {{ order.pk }}</h2>
+
+    {# форма отмены заказа -- показывается, если у юзера отключен javascript #}
+    {% with order_cancel_form as form %}
+        <form id="order_cancel_form" action="{% url shop-order-cancel order.pk %}" method="post">
+            {% csrf_token %}
+
+            <div class="form-errors">{{ form.non_field_errors }}</div>
+
+            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+
+            <div class="header-text">Пожалуйста, укажите причину отмены заказа:</div>
+
+            {% with form.reason as field %}
+                <div id="{{ field.name }}" class="field clear">
+                    {{ field }}
+                    <div class="errors">{{ field.errors }}</div>
+                </div>
+            {% endwith %}
+
+            <div class="buttons">
+                <input type="submit" name="_cancel" value="Оставить заказ">
+                <input type="submit" name="submit" value="Удалить этот заказ" class="button-as-link">
+            </div>
+        </form>
+    {% endwith %}
+</div>
+
+{% endblock %}

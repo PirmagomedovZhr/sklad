@@ -1,0 +1,17 @@
+{% load thumbnail %}
+
+{% for teaser in teasers %}
+    <div class="slide">
+        {% thumbnail teaser.image "1200x90" crop="top" as img %}
+            {% if teaser.link %}
+                <a href="{{ teaser.link }}"><img src="{{ img.url }}" /></a>
+            {% else %}
+                <img src="{{ img.url }}" />
+            {% endif %}
+        {% endthumbnail %}
+
+        {% if teaser.new %}
+            <h6 class="new">Новинка</h6>
+        {% endif %}
+    </div>
+{% endfor %}

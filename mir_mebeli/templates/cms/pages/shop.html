@@ -1,0 +1,91 @@
+{% extends 'cms/pages/shops.html' %}
+
+{% load thumbnail %}
+
+{% block page-title %}{{ shop.name }}{% endblock %}
+
+{% block content_class %}class="narrow"{% endblock %}
+
+{% block sidebar %}
+<div id="sidebar">
+    {% if shops.other_region %}<h4>Магазины в Санкт-Петербурге</h4>
+    <ul class="shop">
+    {% for item in shops.other_region %}
+        <li class="{% ifequal shop.get_absolute_url item.get_absolute_url %}selected{% endifequal %}"><div class="marker"></div><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></li>
+    {% endfor %}
+    </ul>{% endif %}
+    {% if shops.murmansk %}<h4>Магазины в Мурманске</h4>
+    <ul class="shop">
+    {% for item in shops.murmansk %}
+        <li class="{% ifequal shop.get_absolute_url item.get_absolute_url %}selected{% endifequal %}"><div class="marker"></div><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></li>
+    {% endfor %}
+    </ul>{% endif %}
+    {% if shops.murmansk_region %}<h4>Магазины в Мурманской области</h4>
+    <ul class="shop">
+    {% for item in shops.murmansk_region %}
+        <li class="{% ifequal shop.get_absolute_url item.get_absolute_url %}selected{% endifequal %}"><div class="marker"></div><a href="{{ item.get_absolute_url }}">{{ item.name }}</a></li>
+    {% endfor %}
+    </ul>{% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="shop-image">
+    {% thumbnail shop.image "400x300" padding=True as img %}
+        <img src="{{ img.url }}" />
+    {% empty %}
+        <img src="{% thumbnail "images/shop_noimage.jpg" "400x300" as noimg %}{{ noimg.url }}{% endthumbnail %}" />
+    {% endthumbnail %}
+</div>
+<div class="shop-info">
+    {% comment %}
+    {% if shop.address %}<p class="shop-address"><a href="#popup-map-{{ shop.pk }}" class="fancybox">{{ shop.address }}</a></p>{% endif %}
+    {% endcomment %}
+    {% if shop.address %}<p class="shop-address">{{ shop.address }}</p>{% endif %}
+    {% if shop.contact %}<p class="shop-contact">{{ shop.contact|linebreaksbr }}</p>{% endif %}
+    {% if shop.mode %}<p class="shop-mode">{{ shop.mode }}</p>{% endif %}
+
+    
+</div>
+{% if shop.address %} {# яндекс-карта #}
+    <div id="shop-popup-map-{{ shop.pk }}" style="width: 900px; height: 450px; margin: 20px 0 0 0;"></div>
+        <script type="text/javascript">
+            YMaps.jQuery(function () {
+                var map_popup = new YMaps.Map(YMaps.jQuery("#shop-popup-map-{{ shop.pk }}")[0]);
+                map_popup.enableScrollZoom();
+                map_popup.setCenter(new YMaps.GeoPoint(37.64, 55.76), 15);
+
+                var geocoder = new YMaps.Geocoder("{{ geo.full_addr }}", { prefLang : "ru" } );
+
+                YMaps.Events.observe(geocoder, geocoder.Events.Load, function (geocoder) {
+                    map_popup.addOverlay(geocoder.get(0));
+                    map_popup.setBounds(geocoder.get(0).getBounds());
+                });
+            });
+        </script>
+    {% endif %}
+{% comment %}
+{% if shop.address %} {# яндекс-карта #}
+<div style="width: 0px; height: 0px; overflow: hidden;">
+    <div id="popup-map-{{ shop.pk }}">
+        <div id="shop-popup-map-{{ shop.pk }}" style="width: 400px; height: 400px; margin-bottom: 10px;"></div>
+    </div>
+    <script type="text/javascript">
+        YMaps.jQuery(function () {
+            var map_popup = new YMaps.Map(YMaps.jQuery("#shop-popup-map-{{ shop.pk }}")[0]);
+            map_popup.enableScrollZoom();
+            map_popup.setCenter(new YMaps.GeoPoint(37.64, 55.76), 15);
+
+            var geocoder = new YMaps.Geocoder("{{ geo.full_addr }}", { prefLang : "ru" } );
+
+            YMaps.Events.observe(geocoder, geocoder.Events.Load, function (geocoder) {
+                map_popup.addOverlay(geocoder.get(0));
+                map_popup.setBounds(geocoder.get(0).getBounds());
+            });
+        });
+    </script>
+</div>
+{% endif %}
+{% endcomment %}
+
+{% endblock %}

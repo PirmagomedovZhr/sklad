@@ -1,0 +1,31 @@
+{% extends 'cms/base.html' %}
+
+{% load shop pytils_numeral thumbnail %}
+
+{% block title %}Список покупок{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+
+    <script src="{{ MEDIA_URL }}js/cart.js?t=1450258153"></script>
+{% endblock %}
+
+{% block content %}
+
+{% if not request.user.is_authenticated %}
+    <h1>Ваш список покупок</h1>
+
+    {% if wishlist.is_empty %}
+        <h2 class="align-center">Ваш список покупок пуст</h2>
+
+    {% else %}
+        <div id="wishlist" class="cart cart-tab">
+
+            <div class='print_it r'><a href="{% url wishlist_print %}">Версия для печати</a></div>
+
+            {% include 'cms/pages/my_wishlist.html' %}
+        </div>
+    {% endif %}
+{% endif %}
+
+{% endblock %}

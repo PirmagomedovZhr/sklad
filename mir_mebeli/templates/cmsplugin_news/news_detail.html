@@ -1,0 +1,12 @@
+{% extends 'cmsplugin_news/news_base.html' %}
+{% block page-title %}Просмотр новости{% endblock %}
+{% block content %}
+<div class="news">
+	<div class="new">
+	    <div class="title">{{ object.title }}</div>
+	    {{ object.content|safe }}
+	    <div class="date">{{ object.pub_date }}</div>
+	</div>
+</div>
+{% endblock %}
+

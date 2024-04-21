@@ -1,0 +1,14 @@
+<a href="#popup_map" class="fancybox">Посмотреть на карте</a>
+
+<div style="width: 0px; height: 0px; overflow: hidden;">
+    <div id="popup_map">
+        <img src="{{ MEDIA_URL }}images/2034574191_1200.jpg" />
+        {% comment %}{#<!--  ATTENTION: set a height for the yandex-map-container in CSS ! -->#}
+        <div id="popup_yandex_map" class="yandex-map-container">{% endcomment %}
+        </div>
+    </div>
+</div>
+
+{% comment %}<script type="text/javascript" charset="utf-8"
+    async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Adabc022f5f1a8c89e32d7130dab8560ff19ad1442098fa5260d0af3a760953d2&amp;width=1200&amp;height=450&amp;lang=ru_RU&amp;scroll=true&amp;id=popup_yandex_map">
+</script>{% endcomment %}

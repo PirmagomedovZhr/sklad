@@ -1,0 +1,3 @@
+#content .guestbook-form .errorlist { margin-left:0; }
+#sidebar ul li .marker { top:4px !important; }
+#sidebar ul li.selected, #sidebar ul li.no-line { border:none; }

@@ -1,0 +1,8 @@
+Новое сообщение в гостевой книге сайта sklad51.ru
+
+Дата и время публикации: {{ msg.created|date:"d/m/Y" }} {{ msg.created|time:"H:i:s" }}
+
+Имя: {{ msg.fio }}
+Email: {{ msg.email }}
+
+Текст сообщения: {{ msg.text }}

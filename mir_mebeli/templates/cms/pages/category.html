@@ -1,0 +1,75 @@
+{% extends 'cms/base.html' %}
+
+{% load cms_tags menu_tags thumbnail shop %}
+
+{% block title %}
+    {% if category.search_title and category.search_title.strip %}
+        {{ category.search_title }}
+    {% else %}
+        {{ category.name }}
+    {% endif %}
+{% endblock %}
+
+{% block meta %}
+    {% if category.meta_description %}
+        <meta name="description" content="{{ category.meta_description|escape }}" />
+    {% endif %}
+    {% if category.meta_keywords %}
+        <meta name="keywords" content="{{ category.meta_keywords|escape }}" />
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+
+    <script src="{{ MEDIA_URL }}js/catalog.js?t=1443218157"></script>
+{% endblock %}
+
+{% block content_class %}class="narrow"{% endblock %}
+
+{% block sidebar %}
+    <div id="sidebar">
+        {% include "block_cart.html" %}
+
+        <div class="clear"></div>
+
+        <div class="category-navigation">
+            <ul>
+                {% if category == root_category %}
+                    <li class="selected">Все товары</li>
+                {% else %}
+                    <li><a href="{% url category_view root_category.path %}">Все товары</a></li>
+                {% endif %}
+
+                {% for cat in root_sub_categories %}
+                    {% if category.path == cat.path %}
+                        <li class="selected">{{ cat.name }}</li>
+                    {% else %}
+                        <li><a href="{% url category_view cat.path %}">{{ cat.name }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+		
+    </div>
+	
+{% endblock %}
+
+{% block content %}
+    <div class="clear">
+        <div class="pseudo-header-category">{{ category.name }}</div>
+    </div>
+
+    {% if category.description %}
+        <div class="info">{{ category.description|linebreaks }}</div>
+    {% endif %}
+
+    {% include "cms/pages/goods_list.html" %}
+
+    {% if category.search_title and category.search_text %}
+        <div class="clear"></div>
+        <div class="search-info">
+            <p>{{ category.search_text|safe }}</p>
+        </div>
+    {% endif %}
+{% endblock %}

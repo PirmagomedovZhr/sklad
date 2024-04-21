@@ -1,0 +1,39 @@
+{% extends 'cms/pages/category.html' %}
+
+{% load cms_tags thumbnail shop cart_tags wishlist_tags pytils_numeral %}
+
+{% block title %}{{ good.get_name }}{% endblock %}
+
+{% block content %}
+
+<div class="clear"><h1>{{ good.get_name }}</h1></div>
+
+<div class="clear good-info">
+    <div class="good2">
+        <div class="image">
+            {% thumbnail good.image "130x130" padding=True as img %}
+                <a href="{{ good.image.url }}" rel="shadowbox[good-{{ good.pk }}]">
+                    <img src="{{ img.url }}" width="130" height="130" title="{{ good.get_name }}" />
+                </a>
+            {% empty %}
+                <img src="{{ MEDIA_URL }}images/noimage.jpg" width="130" height="130" title="{{ good.get_name }}" />
+            {% endthumbnail %}
+        </div>
+        {% if good.new %}<h6 class="new">НОВИНКА</h6>{% endif %}
+        {% if good.price > 0 %}<div class="price">{{ good.price|price }} р.</div>{% endif %}
+        <div class="link">{% add_to_cart_link good cart %}</div>
+        {% if not good.is_really_available %}<div class="na_zakaz">На заказ</div>{% endif %}
+    </div>
+
+    <div class="desc">
+        {% if good.dims %}
+            <p>Длина / Высота / Ширина (мм):<br />{{ good.dims }}</p>
+        {% endif %}
+        {% if good.description %}
+            <p>{{ good.description|linebreaks }}</p>
+        {% endif %}
+    </div>
+    <div class="quantity">Количество: {% cart_set_quantity good cart %}</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,64 @@
+User-agent: Yandex
+Disallow: /*?gclid=*
+Disallow: /*?utm_source=*
+Disallow: /*?yclid=*
+Disallow: /*?*
+Disallow: /*admin
+Disallow: /*korzina
+Disallow: /*?page=*
+Disallow: /*register-agreement/
+Disallow: /*wishlist/
+Allow: /
+HOST: https://sklad51.ru
+
+User-agent: Googlebot
+Disallow: /*?gclid=*
+Disallow: /*?utm_source=*
+Disallow: /*?yclid=*
+Disallow: /*?*
+Disallow: /*admin
+Disallow: /*korzina
+Disallow: /*?page=*
+Allow: /
+Disallow: /*register-agreement/
+Disallow: /*wishlist/
+
+
+User-agent: Mail.Ru
+Disallow: /*?gclid=*
+Disallow: /*?utm_source=*
+Disallow: /*?yclid=*
+Disallow: /*?*
+Disallow: /*admin
+Disallow: /*korzina
+Disallow: /*?page=*
+Allow: /
+Disallow: /*register-agreement/
+Disallow: /*wishlist/
+
+
+User-agent: *
+Disallow: /*?gclid=*
+Disallow: /*?utm_source=*
+Disallow: /*?yclid=*
+Disallow: /*?*
+Disallow: /*admin
+Disallow: /*korzina
+Disallow: /*?page=*
+Allow: /
+Disallow: /*register-agreement/
+Disallow: /*wishlist/
+
+User-agent: Googlebot-Image
+Allow: *.jpeg$
+Allow: *.jpg$
+Allow: *.png$
+Allow: *.gif$
+
+User-agent: YandexImages
+Allow: *.jpeg$
+Allow: *.jpg$
+Allow: *.png$
+Allow: *.gif$
+
+Sitemap: https://sklad51.ru/sitemap.xml

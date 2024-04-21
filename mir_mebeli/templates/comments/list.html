@@ -1,0 +1,15 @@
+{% load pytils_dt %}
+<div id="comments">
+	{% for comment in comment_list reversed %}
+		<div id="c{{ comment.id }}" class="message comment {% if forloop.revcounter > 1 %}multi{% endif %}">
+			<div class="text admin">
+			    
+			    {{ comment.comment|linebreaksbr }}
+            </div>
+			<p>
+			    <span class="name">{{ comment.name }}</span>&nbsp;
+			    <span class="date">{{ comment.submit_date|distance_of_time }}</span>
+            </p>
+		</div>
+	{% endfor %}
+</div>

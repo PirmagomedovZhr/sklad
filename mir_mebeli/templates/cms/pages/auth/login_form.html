@@ -1,0 +1,36 @@
+<form id="login_form" class="form2 toggle-form active_form ajax-form" action="{% url register-and-login %}" method="post">
+    {% csrf_token %}
+
+    <h3>Вход в магазин /</h3>
+    <a id="show_reset_form" href="#">Напомнить пароль</a>
+
+    <div class="form-errors">{{ form.non_field_errors }}</div>
+
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+
+    {% with form.email as field %}
+        <div id="{{ field.name }}" class="field clear">
+            <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+            {{ field }}
+            {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
+            <div class="errors">{{ field.errors }}</div>
+        </div>
+    {% endwith %}
+
+    {% with form.password as field %}
+        <div id="{{ field.name }}" class="field clear">
+            <div class="label">{{ field.label_tag }}:{% if field.field.required %} <span class="required">*</span>{% endif %}</div>
+            {{ field }}
+            {% if field.help_text %}<div class="help-text">{{ field.help_text }}</div>{% endif %}
+            <div class="errors">{{ field.errors }}</div>
+        </div>
+    {% endwith %}
+
+    <input type="hidden" name="next" value="{% firstof next '/' %}" />
+
+    <div class="button"><input type="submit" name="login" value="Войти" /></div>
+
+    <div class="message"></div>
+</form>

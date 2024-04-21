@@ -1,0 +1,8 @@
+{% extends "admin/change_list.html" %}
+
+{% block pretitle %}
+    <div style="margin-bottom: 10px; text-decoration: underline;">
+        <a href="{% url shop-export-goods %}">Экспортировать все товары в формате Excel</a>
+    </div>
+    {{ block.super }}
+{% endblock %}

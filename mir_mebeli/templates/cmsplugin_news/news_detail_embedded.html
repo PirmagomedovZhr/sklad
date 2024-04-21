@@ -1,0 +1,5 @@
+<div class="new">
+    <div class="title">{{ object.title }}</div>
+    {{ object.content|safe }}
+    <div class="date">{{ object.pub_date|date:"d.m.Y H:i" }}</div>
+</div>

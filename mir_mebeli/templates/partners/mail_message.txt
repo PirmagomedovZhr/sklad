@@ -1,0 +1,17 @@
+Предложение о партнерстве с сайта sklad51.ru
+
+Дата создания: {{ obj.created_at|date:"d.m.Y" }}, {{ obj.created_at|time:"H:i" }}
+
+Имя: {{ obj.name }}
+Телефон: {{ obj.phone }}
+E-mail: {{ obj.email }}
+
+Сообщение: {% if obj.body %}
+===
+{{ obj.body }}
+==={% else %}-- пусто ---{% endif %}
+
+Прикрепленные файлы: {% for f in obj.files %}
+http://sklad51.ru{{ f.url }}{% empty %}--- пусто ---{% endfor %}
+
+Ссылка на предложение: http://sklad51.ru{% url admin:partners_message_change obj.pk %}

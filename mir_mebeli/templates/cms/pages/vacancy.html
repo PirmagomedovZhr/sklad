@@ -1,0 +1,74 @@
+{% extends 'cms/base.html' %}
+
+{% load menu_tags %}
+
+{% block page-title %}{{ vacancy.position }}{% endblock %}
+
+{% block cart %}<h5>Кол-во просмотров: {{ vacancy.count_view }}</h5>{% endblock %}
+
+{% block content_class %}class="narrow"{% endblock %}
+
+{% block sidebar %}
+<div id="sidebar">
+    {% show_menu_below_id "company" 0 100 100 100 "cms/menu/about_menu.html" %}
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="vacancy">
+        <table>
+            <tr>
+                <th>Зарплата</th>
+                <th>Образование</th>
+                <th>Опыт работы</th>
+            </tr>
+            <tr>
+                <td>{{ vacancy.salary }}</td>
+                <td>{{ vacancy.education }}</td>
+                <td>{{ vacancy.experience }}</td>
+            </tr>
+            {% if vacancy.gender or vacancy.age or vacancy.skills %}
+                <tr>
+                    <th colspan="3">Требования к кандидату</th>
+                </tr>
+                {% if vacancy.gender or vacancy.age %}
+                    <tr>
+                        <td colspan="3">
+                            {% if vacancy.gender %}{{ vacancy.get_gender_display }}{% endif %}
+                            {% if vacancy.age %}{{ vacancy.age }}{% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+                {% if vacancy.skill %}
+                    <tr>
+                        <td colspan="3">{{ vacancy.skill|linebreaksbr }}</td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+            {% if vacancy.acting %}
+                <tr>
+                    <th colspan="3">Основные обязанности</th>
+                </tr>
+                <tr>
+                    <td colspan="3">{{ vacancy.acting|linebreaksbr }}</td>
+                </tr>
+            {% endif %}
+            {% if vacancy.schedule %}
+                <tr>
+                    <th colspan="3">График работы</th>
+                </tr>
+                <tr>
+                    <td colspan="3">{{ vacancy.schedule }}</td>
+                </tr>
+            {% endif %}
+            {% if vacancy.contact %}
+                <tr>
+                    <th colspan="3">Контактное лицо</th>
+                </tr>
+                <tr>
+                    <td colspan="3">{{ vacancy.contact|linebreaksbr }}</td>
+                </tr>
+            {% endif %}
+        </table>
+    </div>
+{% endblock %}

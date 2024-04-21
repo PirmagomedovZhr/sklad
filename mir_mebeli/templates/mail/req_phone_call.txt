@@ -1,0 +1,3 @@
+Запрос обратного звонка с сайта sklad51.ru
+
+Телефон: {{ phone_call_request.phone }}

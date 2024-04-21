@@ -1,0 +1,21 @@
+{% if categories %}
+
+<ul>
+    {% for cat in categories %}
+        {% if forloop.first or forloop.counter == 15 or forloop.counter == 30 %}
+            <div style="float: left; margin-bottom:20px;">
+        {% endif %}
+
+        {% if cat == root_category %}
+            <li class="selected">{{ cat.name }}</li>
+        {% else %}
+            <li><a href="{% url category_view cat.path %}">{{ cat.name }}</a></li>
+        {% endif %}
+
+        {% if forloop.last or forloop.counter == 14 or forloop.counter == 29 %}
+            </div>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+{% endif %}

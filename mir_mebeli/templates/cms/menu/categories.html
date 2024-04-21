@@ -1,0 +1,22 @@
+{% load cms_tags cache menu_tags %}
+
+{% if children %}
+    <ul class="left-menu">
+        {% for child in children %}
+            <li class="{% if forloop.last %}no-line {% endif %}{% if child.selected %}selected{% endif %}{% if child.ancestor %}ancestor{% endif %}{% if child.sibling %}sibling{% endif %}{% if child.descendant %} descendant{% endif %}">
+                <div class="marker"></div>
+                <a href="{{ child.get_absolute_url }}">{{ child.get_menu_title }}</a>
+                <ul>
+                {% for subchild in child.children %}
+                    {% if subchild.parent_namespace == 'Categories' %}
+                        <li class="{% if forloop.last %}no-line {% endif %}{% if subchild.selected %}selected{% endif %}{% if subchild.ancestor %}ancestor{% endif %}{% if subchild.sibling %}sibling{% endif %}{% if subchild.descendant %} descendant{% endif %}">
+                            <div class="marker"></div>
+                            <a href="{{ subchild.get_absolute_url }}">{{ subchild.get_menu_title }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

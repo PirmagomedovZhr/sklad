@@ -1,0 +1,25 @@
+.row .image .link .name, .catalog .items .item .link .name {
+    background: transparent;
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#7FFFFFFF,endColorstr=#7FFFFFFF)";
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#7FFFFFFF,endColorstr=#7FFFFFFF);
+    zoom: 1;
+}
+.row .image:hover .link .name, .catalog .items .item:hover .link .name {
+    background: transparent;
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#7FFC8E00,endColorstr=#7FFC8E00)";
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#7FFC8E00,endColorstr=#7FFC8E00);
+    zoom: 1;
+}
+#fixed-block {
+    background: transparent;
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#BFFFFFFF,endColorstr=#BFFFFFFF)";
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#BFFFFFFF,endColorstr=#BFFFFFFF);
+    zoom: 1;
+}
+#paginator form select { vertical-align:middle; }
+.good2 .price {
+background: transparent;
+-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#B13E3E3E,endColorstr=#B13E3E3E)"; 
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#B13E3E3E,endColorstr=#B13E3E3E);
+zoom: 1;
+}

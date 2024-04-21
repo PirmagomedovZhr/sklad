@@ -1,0 +1,14 @@
+Заказ с сайта sklad51.ru
+
+Телефон: {{ order.phone }}
+Контактное лицо: {{ order.get_full_fio }}
+
+Город: {{ order.city }}
+Адрес: {{ order.address }}
+
+Доставка: {{ order.delivery }}
+
+Заказанные позиции:
+{% for item in order.items.all %}{{ item.good.get_name|safe }}. Кол–во: {{ item.count }}. Цена: {{ item.price }} руб.
+{% endfor %}
+Итого: {{ order.sum }} руб. (без учета стоимости доставки)

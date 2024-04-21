@@ -1,0 +1,32 @@
+{% load thumbnail shop %}
+
+{% if specials %}
+
+<div class="spec">
+    <h3>Cпециальное предложение</h3>
+    <div id="wrap" class="special">
+        <ul>
+            {% for special in specials %}
+            <li>
+                <div class="product">
+                    {% thumbnail special.image "155x115" padding=True as img %}
+                        <a class="img" href="{{ special.get_absolute_url }}" style="background-image: url({{ img.url }})">
+                            {% if special.new %}<span class="new">Новинка</span>{% endif %}
+                        </a>
+                    {% empty %}
+                        {% thumbnail "images/noimage.jpg" "155x115" as noimg %}
+                            <a class="img" href="{{ special.get_absolute_url }}" style="background-image: url({{ noimg.url }})">
+                                {% if special.new %}<span class="new">Новинка</span>{% endif %}
+                            </a>
+                        {% endthumbnail %}
+                    {% endthumbnail %}
+                    <h5><a href="{{ special.get_absolute_url }}">{{ special.name }}</a></h5>
+                    {% if special.price %}<h6>{{ special.price|price }} руб.</h6>{% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endif %}

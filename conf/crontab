@@ -1,0 +1,6 @@
+*/24 * * * * root /opt/app/manage.sh index # доиндексация
+34 */3 * * * root /opt/app/manage.sh index --rebuild # переиндексация
+0 */4 * * * root /opt/app/manage.sh shop_update_category_counters # принудительно обновить счётчики каталога
+*/5 * * * * root /opt/app/manage.sh send_mail # отправка писем
+*/15 * * * * root /opt/app/manage.sh import_prices_from_dir # импорт цен из ftp-директории
+# An empty line is required at the end of this file for a valid cron file.

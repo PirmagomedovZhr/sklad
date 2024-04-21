@@ -1,0 +1,33 @@
+{% extends 'cms/base.html' %}
+
+{% load cms_tags %}
+
+{% block content %}
+<script type="text/javascript" charset="utf-8" src="https://api-maps.yandex.ru/services/constructor/1.0/js/?sid=h0PSLJT-mRBheqBr672TbDVpcDj0TMTT&width=1200&height=450"></script>
+    {% if shops.other_region %}
+        <div class="shops-other-region clear">
+            <h2>Магазины в Санкт-Петербурге</h2>
+            {% for shop in shops.other_region %}
+                {% include "cms/parts/shop.html" %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if shops.murmansk %}
+        <div class="shops-murmansk clear">
+            <h2>Магазины в Мурманске</h2>
+            {% for shop in shops.murmansk %}
+                {% include "cms/parts/shop.html" %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if shops.murmansk_region %}
+        <div class="shops-murmansk-region clear">
+            <h2>Магазины в Мурманской области</h2>
+            {% for shop in shops.murmansk_region %}
+                {% include "cms/parts/shop.html" %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

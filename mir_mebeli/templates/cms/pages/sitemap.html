@@ -1,0 +1,24 @@
+{% extends 'cms/base.html' %}
+
+{% block title %}Карта сайта{% endblock %}
+
+{% block page-title %}Карта сайта{% endblock %}
+
+{% block content %}
+    <ul class="sitemap">
+        {% for item in cms_sitemap.items %}
+            <li class="level{{ item.level }}"><a href="{{ item.get_absolute_url }}">{{ item.get_menu_title }}</a></li>
+        {% endfor %}
+
+        <div style="margin-top: 10px;">Каталог</div>
+        <div style="padding-left: 20px;">
+{#            {% for item in catalog_items %}#}
+            {% for item in catalog_category_menu %}
+                <li class="level{{ item.level }}"><a href="{{ item.get_absolute_url }}">{{ item.get_menu_title }}</a></li>
+                {% for desc in item.children %}
+                    <li class="level{{ desc.level }}"><a href="{{ desc.get_absolute_url }}">{{ desc.get_menu_title }}</a></li>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </ul>
+{% endblock %}

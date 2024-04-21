@@ -1,0 +1,47 @@
+{% extends 'cms/base.html' %}
+
+{% load shop pytils_numeral %}
+
+{% block register_and_login_dialog %}{% endblock %} {# отключить диалоги входа/регистрации на этой странице #}
+
+{# js определен в 'cms/base.html' #}
+
+{% block title %}Вход и регистрация{% endblock %}
+
+{% block header %}{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block content_all %}{% endblock %}
+
+{% block content_wide %}
+<div class="content-wide">
+    <div style="float: left;">
+        {% with login_form as form %}
+            {% include 'cms/pages/auth/login_form.html' %}
+        {% endwith %}
+
+        {% with reset_form as form %}
+            {% include 'cms/pages/auth/reset_form.html' %}
+        {% endwith %}
+    </div>
+
+    <div style="float: left;">
+        {% with register_form as form %}
+            {% include 'cms/pages/auth/register_form.html' %}
+        {% endwith %}
+    </div>
+
+    <div class="order-on-login">
+        {% if not cart.cached_is_empty %}
+            <h3>Ваш заказ</h3>
+
+            <div class="clear">
+                <p>{{ cart.cached_items_count|get_plural:"товар, товара, товаров" }} на {{ cart.cached_cost|price }} рублей</p>
+            </div>
+
+            <a href="{% url cart %}">Вернуться в корзину</a>
+        {% else %}
+            В корзине ничего нет.
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
